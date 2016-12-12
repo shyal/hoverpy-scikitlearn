@@ -1,5 +1,6 @@
 import argparse
 from lib.hn_helpers import getHNData
+from lib.reddit_helpers import getRedditData
 
 from hackernews import HackerNews
 from hoverpy import HoverPy
@@ -27,17 +28,25 @@ parser.add_argument(
     action="store_true")
 args = parser.parse_args()
 
-hp = HoverPy(capture=args.capture)
-
-subs = ['showstories', 'askstories', 'jobstories']
+subs = [('hn', 'showstories'),
+        ('hn', 'askstories'),
+        ('hn', 'jobstories'),
+        ('reddit', 'music'),
+        ('reddit', 'movies'),
+        ('reddit', 'books')]
 
 titles = []
 target = []
 
 for i in range(len(subs)):
-    subTitles = getHNData(
-        sub=subs[i],
-        args=args)
+    if subs[i][0] == 'hn':
+        subTitles = getHNData(
+            sub=subs[i][1],
+            args=args)
+    if subs[i][0] == 'reddit':
+        subTitles = getRedditData(
+            sub=subs[i][1],
+            args=args)
     titles += subTitles
     target += [i] * len(subTitles)
 

@@ -1,5 +1,6 @@
 import requests
 import time
+import hoverpy
 
 
 def getHNItem(prot, item, args):
@@ -29,6 +30,7 @@ def getHNItem(prot, item, args):
 
 
 def getHNData(sub, args):
+    hp = hoverpy.HoverPy(capture=args.capture, dbpath="hn.db")
     print("getting hn %s - this may take a while!" % sub)
     prot = "https" if args.capture else "http"
     start = time.time()

@@ -1,7 +1,7 @@
 import argparse
 from lib.hn_helpers import getHNData
-from lib.reddit_helpers import getRedditData
 
+from hackernews import HackerNews
 from hoverpy import HoverPy
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -19,39 +19,20 @@ parser.add_argument(
     action="store_true")
 args = parser.parse_args()
 
-hp = HoverPy()
+hp = HoverPy(capture=args.capture)
 
-limit = 10
-
-if args.capture:
-    hp.capture()
-else:
-    hp.simulate()
-
-subs = [
-    'music',
-    'democrats',
-    'republicans',
-    'movies',
-    'books']
+subs = ['showstories', 'askstories', 'jobstories']
 
 titles = []
 target = []
 
 for i in range(len(subs)):
-    subTitles = getRedditData(
+    subTitles = getHNData(
         sub=subs[i],
-        verbose=args.verbose,
-        comments=True,
-        limit=limit)
+        capture=args.capture,
+        verbose=args.verbose)
     titles += subTitles
     target += [i] * len(subTitles)
-
-hnTitles = getHNData(verbose=args.verbose, limit=limit, comments=True)
-titles += hnTitles
-target += [len(subs)] * len(hnTitles)
-
-categories = subs + ['hackernews']
 
 count_vect = CountVectorizer()
 X_train_counts = count_vect.fit_transform(titles)
@@ -69,7 +50,7 @@ def predict(sentences):
     predicted = clf.predict(X_new_tfidf)
 
     for doc, category in zip(sentences, predicted):
-        print('%r => %s' % (doc, categories[category]))
+        print('%r => %s' % (doc, subs[category]))
 
 while True:
     predict([raw_input("Enter title: ").strip()])

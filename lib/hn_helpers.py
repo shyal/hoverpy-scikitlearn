@@ -1,14 +1,25 @@
 from hackernews import HackerNews
+import requests
+import time
 
 
-def getHNData(comments=False, limit=100, verbose=False):
-    hn = HackerNews()
+def getHNData(sub, capture, verbose):
+    print("getting hn %s - this may take a while!" % sub)
+    prot = "https" if capture else "http"
+    start = time.time()
+    stories = requests.get(
+        "%s://hacker-news.firebaseio.com/v0/%s.json" % (prot, sub)).json()
     titles = []
-    print "GETTING HACKERNEWS DATA"
-    for story_id in hn.top_stories(limit=limit):
-        story = hn.get_item(story_id)
+    for story in stories[:200]:
+        url = "%s://hacker-news.firebaseio.com/v0/item/%i.json" % (prot, story)
+        r = requests.get(url)
+        title = r.json()["title"].lower()
         if verbose:
-            print(story.title.lower())
-        titles.append(story.title.lower())
-    print("got %i hackernews titles" % len(titles))
+            print("getting url %s" % url)
+            print(title)
+        titles.append(title)
+
+    end = time.time() - start
+    print("got %i titles in %f seconds" % (len(titles), end))
+
     return titles

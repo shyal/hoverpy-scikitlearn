@@ -36,7 +36,7 @@ def getRedditComments(args, sub, id):
         else:
             if args.capture:
                 print "couldn't get comment thread!"
-                time.sleep(3)
+                time.sleep(1)
             else:
                 break
 
@@ -44,7 +44,8 @@ def getRedditComments(args, sub, id):
 
 
 def getRedditData(args, limit=100, sub="all"):
-    with hoverpy.HoverPy(capture=args.capture, dbpath="reddit.db"):
+    with hoverpy.HoverPy(capture=args.capture,
+                         dbpath=("data/reddit.%s.db" % sub)):
 
         print("getting reddit data for %s" % (sub))
         print("*"*50)
@@ -85,12 +86,12 @@ if __name__ == "__main__":
     class Args:
 
         def __init__(self):
-            self.capture = False
+            self.capture = True
 
-    print getRedditData(Args(), sub="books")
+    # print getRedditData(Args(), sub="books")
 
-    # getRedditData(Args(), sub="movies")
-    # getRedditData(Args(), sub="music")
+#    print getRedditData(Args(), sub="movies")
+    getRedditData(Args(), sub="music")
     #
     # with hoverpy.HoverPy(capture=False, dbpath="reddit.db"):
     #     print getRedditComments("books", "5hwj6m")

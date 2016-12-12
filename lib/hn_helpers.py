@@ -13,6 +13,9 @@ def getHNData(sub, capture, verbose):
     for story in stories[:200]:
         url = "%s://hacker-news.firebaseio.com/v0/item/%i.json" % (prot, story)
         r = requests.get(url)
+
+        print json.dumps(r.json(), sort_keys=True, indent=4, separators=(',', ': '))
+
         title = r.json()["title"].lower()
         if verbose:
             print("getting url %s" % url)

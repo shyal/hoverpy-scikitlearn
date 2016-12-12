@@ -17,6 +17,14 @@ parser.add_argument(
     "--verbose",
     help="print more information",
     action="store_true")
+parser.add_argument(
+    "--comments",
+    help="include comments",
+    action="store_true")
+parser.add_argument(
+    "--text",
+    help="include post text",
+    action="store_true")
 args = parser.parse_args()
 
 hp = HoverPy(capture=args.capture)
@@ -29,8 +37,7 @@ target = []
 for i in range(len(subs)):
     subTitles = getHNData(
         sub=subs[i],
-        capture=args.capture,
-        verbose=args.verbose)
+        args=args)
     titles += subTitles
     target += [i] * len(subTitles)
 

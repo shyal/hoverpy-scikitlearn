@@ -3,5 +3,6 @@ python:
   - "2.7"
 script:
   - pip install -i https://testpypi.python.org/pypi hoverpy
+  - pip install scipy
   - python test_social_media.py
 

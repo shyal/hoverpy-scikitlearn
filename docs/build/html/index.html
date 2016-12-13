@@ -46,73 +46,84 @@
 </ul>
 </div>
 <p>At times I want to grab a bunch of data, use it, and spit something out the other end. From time to time I get paid to do this, too. But the world of online dependencies is far less predictable than I&#8217;d like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investigating, and incorporating into my toolset.</p>
-<p>Well I recently came across an ultra-high-performance proxy, written in Go, called <a class="reference external" href="http://www.hoverfly.io/">HoverFly</a>. So I decided to write a light-weight Python binding to it: <a class="reference external" href="http://www.hoverpy.io/">HoverPy</a>. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I&#8217;ll take you through using this very thin Python layer to build a classifier using SciKitLearn, with HackerNews and Reddit as its endpoints.</p>
-<p>What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, and as you&#8217;ll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-right, blazingly fast, and failure proof.</p>
-<div class="section" id="data-mining-hackernews-and-reddit">
-<h2>Data mining HackerNews and Reddit<a class="headerlink" href="#data-mining-hackernews-and-reddit" title="Permalink to this headline">¶</a></h2>
-<p>Let&#8217;s get going:</p>
-<div class="highlight-bash"><div class="highlight"><pre>pip install hoverpy haxor praw
-python
+<div class="figure">
+<img alt="hat" src="_images/hat.jpg" />
+</div>
+<p>Well I recently came across an ultra-high-performance proxy, written in Go, called <a class="reference external" href="http://www.hoverfly.io/">HoverFly</a>. So I decided to write a light-weight Python binding to it: <a class="reference external" href="http://www.hoverpy.io/">HoverPy</a>. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I&#8217;ll take you through using this very thin Python layer to build a classifier using scikit-learn, with HackerNews and Reddit as its endpoints.</p>
+<p>What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you&#8217;ll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-right, blazingly fast, and <strong>utterly failure proof</strong>.</p>
+<p>Let&#8217;s begin by cloning the only repo we&#8217;ll need for this post:</p>
+<div class="highlight-bash"><div class="highlight"><pre>git clone https://github.com/shyal/hoverpy-scikitlearn.git
+<span class="nb">cd </span>hoverpy-scikilearn
+virtualenv .venv
+<span class="nb">source</span> .venv/bin/activate.sh
+pip install hoverpy haxor praw
 </pre></div>
 </div>
-<div class="section" id="lib-hnminer-py">
-<h3>./lib/hnMiner.py<a class="headerlink" href="#lib-hnminer-py" title="Permalink to this headline">¶</a></h3>
-<p>Let&#8217;s get the top 100 posts on HackerNews</p>
+<div class="section" id="data-mining-hackernews-and-reddit">
+<h2>Data mining HackerNews and Reddit<a class="headerlink" href="#data-mining-hackernews-and-reddit" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have our environment setup, let&#8217;s delve straight in by getting the top 100 posts on HackerNews. To do so, feel free to spin up your <code class="docutils literal"><span class="pre">python</span></code> shell and paste this in, or pass it to the python interpreter with <code class="docutils literal"><span class="pre">python</span> <span class="pre">lib/hnMiner.py</span></code></p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">hoverpy</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">hackernews</span> <span class="kn">import</span> <span class="n">HackerNews</span>
+<span class="kn">from</span> <span class="nn">hackernews</span> <span class="kn">import</span> <span class="n">settings</span>
 
 
 <span class="k">def</span> <span class="nf">getHNData</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="s">&quot;showstories&quot;</span><span class="p">):</span>
     <span class="n">dbpath</span> <span class="o">=</span> <span class="s">&quot;data/hn.</span><span class="si">%s</span><span class="s">.db&quot;</span> <span class="o">%</span> <span class="n">sub</span>
     <span class="n">capture</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dbpath</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="n">hoverpy</span><span class="o">.</span><span class="n">HoverPy</span><span class="p">(</span><span class="n">capture</span><span class="o">=</span><span class="n">capture</span><span class="p">,</span> <span class="n">dbpath</span><span class="o">=</span><span class="n">dbpath</span><span class="p">,</span> <span class="n">httpsToHttp</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">hoverpy</span><span class="o">.</span><span class="n">HoverPy</span><span class="p">(</span><span class="n">capture</span><span class="o">=</span><span class="n">capture</span><span class="p">,</span> <span class="n">dbpath</span><span class="o">=</span><span class="n">dbpath</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">capture</span><span class="p">:</span>
+            <span class="n">settings</span><span class="o">.</span><span class="n">supported_api_versions</span><span class="p">[</span>
+                <span class="s">&quot;v0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;http://hacker-news.firebaseio.com/v0/&quot;</span>
+
         <span class="n">hn</span> <span class="o">=</span> <span class="n">HackerNews</span><span class="p">()</span>
         <span class="n">titles</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">print</span><span class="p">(</span><span class="s">&quot;GETTING HACKERNEWS </span><span class="si">%s</span><span class="s"> DATA&quot;</span> <span class="o">%</span> <span class="n">sub</span><span class="p">)</span>
         <span class="n">subs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;showstories&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="o">.</span><span class="n">show_stories</span><span class="p">,</span>
                 <span class="s">&quot;askstories&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="o">.</span><span class="n">ask_stories</span><span class="p">,</span>
-                <span class="s">&quot;jobstories&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="o">.</span><span class="n">job_stories</span><span class="p">}</span>
+                <span class="s">&quot;jobstories&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="o">.</span><span class="n">job_stories</span><span class="p">,</span>
+                <span class="s">&quot;topstories&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="o">.</span><span class="n">top_stories</span><span class="p">}</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">story_id</span> <span class="ow">in</span> <span class="n">subs</span><span class="p">[</span><span class="n">sub</span><span class="p">](</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">):</span>
             <span class="n">story</span> <span class="o">=</span> <span class="n">hn</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">story_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="k">print</span><span class="p">(</span><span class="n">story</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
             <span class="n">titles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">story</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">&quot;got </span><span class="si">%i</span><span class="s"> hackernews titles&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">titles</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span>
+            <span class="s">&quot;got </span><span class="si">%i</span><span class="s"> hackernews titles in </span><span class="si">%f</span><span class="s"> seconds&quot;</span> <span class="o">%</span>
+            <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">titles</span><span class="p">),</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">titles</span>
 
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">getHNData</span><span class="p">(</span><span class="s">&quot;topstories&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="n">getHNData</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="s">&quot;topstories&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>We can do the same with <code class="docutils literal"><span class="pre">lib/redditMiner.py</span></code>.</p>
-<p>Let&#8217;s run this, and get the top 100 titles on HN:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>./hn_titles.py --capture
-
-<span class="o">[</span>...<span class="o">]</span>
-London house prices are having a relatively bad December
-Interview with Max Levchin
-
-<span class="nb">time </span>taken: 15.888608 seconds.
+<p>Output:</p>
+<div class="highlight-bash"><div class="highlight"><pre>got <span class="m">100</span> hackernews titles in 14.678717 seconds
 </pre></div>
 </div>
-<p>Time taken: <strong>15.888608 seconds</strong>. I don&#8217;t know about you, but working with dependencies that take around 15 seconds on each run is simply not workable. So Let&#8217;s now see what happens when we run this code in simulate mode.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>./hn_titles.py --capture
-
-<span class="o">[</span>...<span class="o">]</span>
-London house prices are having a relatively bad December
-Interview with Max Levchin
-
-<span class="nb">time </span>taken: 0.196227 seconds.
+<p>You may notice a blot database was created inside data:</p>
+<div class="highlight-bash"><div class="highlight"><pre>ll data/hn.topstories.db
+-rw-------  <span class="m">1</span> ioloop  staff  <span class="m">262144</span> Dec <span class="m">13</span> 15:27 data/hn.topstories.db
 </pre></div>
 </div>
-<p>Time taken: <strong>0.196227 seconds</strong>. That&#8217;s an 80x speed-up: fast enough to collect a meaningful chunk of data transparently.</p>
+<p>Let&#8217;s run the same command again:</p>
+<div class="highlight-bash"><div class="highlight"><pre>python lib/hnMiner.py
+</pre></div>
 </div>
+<p>Output:</p>
+<div class="highlight-bash"><div class="highlight"><pre>got <span class="m">100</span> hackernews titles in 0.180554 seconds
+</pre></div>
 </div>
+<p>This is roughly an <strong>80x speedup</strong>, that&#8217;s fast enough to start thinking of hitting our endpoint as being as efficient as hitting a database.</p>
+<p>We can do the same with <a class="reference external" href="https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/lib/redditMiner.py">lib/redditMiner.py</a>: <code class="docutils literal"><span class="pre">python</span> <span class="pre">lib/redditMiner.py</span></code>. But I think you got the picture.</p>
+</div>
+<hr class="docutils" />
 <div class="section" id="putting-our-miners-together">
 <h2>Putting our miners together<a class="headerlink" href="#putting-our-miners-together" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s go ahead and write a <code class="docutils literal"><span class="pre">doMining</span></code> function that&#8217;ll bring in all the data we need from the HN sections, and Reddit subs.</p>
@@ -155,9 +166,6 @@ Interview with Max Levchin
 </div>
 <div class="section" id="building-an-hn-or-reddit-classifier">
 <h2>Building an HN or Reddit classifier<a class="headerlink" href="#building-an-hn-or-reddit-classifier" title="Permalink to this headline">¶</a></h2>
-<div class="figure">
-<img alt="hat" src="_images/hat.jpg" />
-</div>
 <p>Well now that we can transparently cache our dependencies, let&#8217;s build something interesting. We are going to build a classifier that predicts whether text may have come from HN or Reddit, and also specifically which sub.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>python social_media.py
 </pre></div>
@@ -273,13 +281,13 @@ Enter title:
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/ioLogo.svg" alt="Logo"/>
+            </a></p>
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Speeding up Machine Learning using a high-performance Go proxy.</a><ul>
-<li><a class="reference internal" href="#data-mining-hackernews-and-reddit">Data mining HackerNews and Reddit</a><ul>
-<li><a class="reference internal" href="#lib-hnminer-py">./lib/hnMiner.py</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#data-mining-hackernews-and-reddit">Data mining HackerNews and Reddit</a></li>
 <li><a class="reference internal" href="#putting-our-miners-together">Putting our miners together</a></li>
 <li><a class="reference internal" href="#building-an-hn-or-reddit-classifier">Building an HN or Reddit classifier</a></li>
 <li><a class="reference internal" href="#social-media-py">./social_media.py</a></li>

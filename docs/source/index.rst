@@ -6,57 +6,65 @@ Speeding up Machine Learning using a high-performance Go proxy.
 
 At times I want to grab a bunch of data, use it, and spit something out the other end. From time to time I get paid to do this, too. But the world of online dependencies is far less predictable than I'd like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investigating, and incorporating into my toolset.
 
-Well I recently came across an ultra-high-performance proxy, written in Go, called `HoverFly <http://www.hoverfly.io/>`_. So I decided to write a light-weight Python binding to it: `HoverPy <http://www.hoverpy.io/>`_. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I'll take you through using this very thin Python layer to build a classifier using SciKitLearn, with HackerNews and Reddit as its endpoints.
+.. figure:: hat.jpg
+   :alt: hat
 
-What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, and as you'll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-right, blazingly fast, and failure proof.
+Well I recently came across an ultra-high-performance proxy, written in Go, called `HoverFly <http://www.hoverfly.io/>`_. So I decided to write a light-weight Python binding to it: `HoverPy <http://www.hoverpy.io/>`_. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I'll take you through using this very thin Python layer to build a classifier using scikit-learn, with HackerNews and Reddit as its endpoints.
+
+What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you'll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-right, blazingly fast, and **utterly failure proof**.
+
+Let's begin by cloning the only repo we'll need for this post:
+
+.. code-block:: bash
+
+    git clone https://github.com/shyal/hoverpy-scikitlearn.git
+    cd hoverpy-scikilearn
+    virtualenv .venv
+    source .venv/bin/activate.sh
+    pip install hoverpy haxor praw
 
 Data mining HackerNews and Reddit
 ---------------------------------
 
-Let's get going:
+.. ./lib/hnMiner.py
+   ~~~~~~~~~~~~~~~~
 
-.. code-block:: bash
-
-    pip install hoverpy haxor praw
-    python
-
-./lib/hnMiner.py
-~~~~~~~~~~~~~~~~~
-
-Let's get the top 100 posts on HackerNews
+Now that we have our environment setup, let's delve straight in by getting the top 100 posts on HackerNews. To do so, feel free to spin up your ``python`` shell and paste this in, or pass it to the python interpreter with ``python lib/hnMiner.py``
 
 .. literalinclude:: ../../lib/hnMiner.py
    :language: python
 
-We can do the same with ``lib/redditMiner.py``.
-
-
-Let's run this, and get the top 100 titles on HN:
+Output:
 
 .. code-block:: bash
-  
-    $ ./hn_titles.py --capture
-    
-    [...]
-    London house prices are having a relatively bad December
-    Interview with Max Levchin
 
-    time taken: 15.888608 seconds.
+    got 100 hackernews titles in 14.678717 seconds
 
-Time taken: **15.888608 seconds**. I don't know about you, but working with dependencies that take around 15 seconds on each run is simply not workable. So Let's now see what happens when we run this code in simulate mode.
-
+You may notice a blot database was created inside data:
 
 .. code-block:: bash
-  
-    $ ./hn_titles.py --capture
-    
-    [...]
-    London house prices are having a relatively bad December
-    Interview with Max Levchin
 
-    time taken: 0.196227 seconds.
+    ll data/hn.topstories.db
+    -rw-------  1 ioloop  staff  262144 Dec 13 15:27 data/hn.topstories.db
 
-Time taken: **0.196227 seconds**. That's an 80x speed-up: fast enough to collect a meaningful chunk of data transparently.
+Let's run the same command again:
+
+.. code-block:: bash
+
+    python lib/hnMiner.py
+
+Output:
+
+.. code-block:: bash
+
+    got 100 hackernews titles in 0.180554 seconds
+
+
+This is roughly an **80x speedup**, that's fast enough to start thinking of hitting our endpoint as being as efficient as hitting a database.
+
+We can do the same with `lib/redditMiner.py <https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/lib/redditMiner.py>`_: ``python lib/redditMiner.py``. But I think you got the picture.
+
+------------
 
 Putting our miners together
 ---------------------------
@@ -71,9 +79,6 @@ That's really all we need, and thanks to HoverFly the entire process, once cache
 Building an HN or Reddit classifier
 -----------------------------------
 
-
-.. figure:: hat.jpg
-   :alt: hat
 
 Well now that we can transparently cache our dependencies, let's build something interesting. We are going to build a classifier that predicts whether text may have come from HN or Reddit, and also specifically which sub.
 

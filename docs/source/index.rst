@@ -4,7 +4,9 @@ Speeding up Machine Learning using a high-performance Go proxy.
 .. toctree::
    :maxdepth: 2
 
-At times I want to grab a bunch of data, use it, and spit something out the other end. From time to time I get paid to do this, too. But the world of online dependencies is far less predictable than I'd like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investing in, and incorporating into my toolset.
+(First draft)
+
+At times I want to grab a bunch of data, use it, and spit something out the other end. But the world of online dependencies is far less predictable than I'd like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investing in, and incorporating into my toolset.
 
 .. figure:: hat.jpg
    :alt: hat
@@ -21,8 +23,7 @@ Let's begin by cloning the only repo we'll need for this post:
     cd hoverpy-scikitlearn
     virtualenv .venv
     source .venv/bin/activate
-    pip install -i https://testpypi.python.org/pypi hoverpy
-    pip install haxor praw
+    pip install -r requirements_dev.txt
 
 Data mining HackerNews and Reddit
 ---------------------------------

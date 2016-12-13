@@ -1,4 +1,6 @@
 hoverpy=0.1.16
 haxor==0.3.1
 praw==3.5.0
+numpy
+scipy
 scikit-learn==0.15.2

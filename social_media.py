@@ -28,19 +28,22 @@ for i in range(len(subs)):
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.linear_model import SGDClassifier
-from sklearn.pipeline import Pipeline
+from sklearn.naive_bayes import MultinomialNB
 
-text_clf = Pipeline([('vect', CountVectorizer()),
-                     ('tfidf', TfidfTransformer()),
-                     ('clf', SGDClassifier(loss='hinge', penalty='l2',
-                                           alpha=1e-3, n_iter=5, random_state=42)),
-                     ])
-_ = text_clf.fit(titles, target)
+count_vect = CountVectorizer()
+X_train_counts = count_vect.fit_transform(titles)
+
+tfidf_transformer = TfidfTransformer()
+X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
+
+clf = MultinomialNB().fit(X_train_tfidf, target)
 
 
 def predict(sentences):
-    predicted = text_clf.predict(sentences)
+    X_new_counts = count_vect.transform(sentences)
+    X_new_tfidf = tfidf_transformer.transform(X_new_counts)
+
+    predicted = clf.predict(X_new_tfidf)
 
     for doc, category in zip(sentences, predicted):
         print('%r => %s' % (doc, subs[category]))

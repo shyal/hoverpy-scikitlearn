@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Dependable dependencies, and machine learning. &mdash; social_media 1.0 documentation</title>
+    <title>Buliding a Python social media classifier using a GoLang Service Virtualiser. &mdash; social_media 1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -39,8 +39,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="dependable-dependencies-and-machine-learning">
-<h1>Dependable dependencies, and machine learning.<a class="headerlink" href="#dependable-dependencies-and-machine-learning" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="buliding-a-python-social-media-classifier-using-a-golang-service-virtualiser">
+<h1>Buliding a Python  social media classifier using a GoLang Service Virtualiser.<a class="headerlink" href="#buliding-a-python-social-media-classifier-using-a-golang-service-virtualiser" title="Permalink to this headline">¶</a></h1>
+<p>(consider: bringing data mining to the 21st century. Can hoverfly be a tool that aids data mining?)</p>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
@@ -50,11 +51,12 @@
 <img alt="sometimes the world can be an unpredictable place" src="_images/1ftcd5.jpg" />
 </div>
 <p>You suddenly realise it&#8217;s not only you who can no longer work: no one can. Little by little, chaos sets in: people start wondering around, talking about their weekends, playing table football, throwing things around. This is the corporate equivalent to a big money bonfire.</p>
+<p>Now here comes the thought expement: what could you have done, as an engineer, to prevent this all to common situation?</p>
 <div class="section" id="you-are-affected-but-the-problem-wasn-t-you">
 <h2>You are affected, but the problem wasn&#8217;t you<a class="headerlink" href="#you-are-affected-but-the-problem-wasn-t-you" title="Permalink to this headline">¶</a></h2>
-<p>One technique to avoid these &#8220;real world&#8221; unpredictabilities is mocking. And I&#8217;m not using quotes around &#8220;real world&#8221; to pretend that I know better than people who don&#8217;t. I&#8217;m using them as sometimes one has to wonder how this whole internet thing holds together anyway.</p>
-<p>How many of your bookmarks no longer work? URLs fade into the darkness, and along with them your data. The issue with mocking however is that it tests your code against expected data. What happens when the network gets slow, data is not what you expected, or the myriad of other things that can go wrong?</p>
-<p>Welcome to the world of service virtualisation. To solve this issue I recently wrote a python binding to a wonderful application written in Go, called HoverFly. This was a true eye-opener for me, as I can now completely isolate myself from the big nasty and unpredictable world, while pretending its still there.</p>
+<p>One technique to avoid these &#8220;real world&#8221; unpredictabilities is mocking. And I&#8217;m not using quotes around &#8220;real world&#8221; to pretend that I know better than people who don&#8217;t. I&#8217;m using them as sometimes one has to stand in awe at the gradual decay of the internet, and how we put up with it.</p>
+<p>How many of your bookmarks no longer work? URLs fade into the darkness, and along with them your data. The issue with mocking however is that it tests your code against expected data. What happens when the network gets slow, is wrong, or fails entirely?</p>
+<p>To solve this issue I recently wrote a python binding to a wonderful Service Virtualisation application called HoverFly. HoverFly is an ultra-fast light-weight proxy written in GoLang. Using it was a true eye-opener for me, as I can now completely isolate myself from the big nasty and unpredictable world, while pretending its still there.</p>
 <p>On my search for dependencies for this blog post, I thought what better than using Hacker News and Reddit. Hacker News is hosted on firebase, which has no rate limit and is actually quite fast. Getting data from Reddit however is a completely different story all together. The rate limit is very low, making it the perfect dependency one cannot depend upon.</p>
 </div>
 <div class="section" id="virtualising-dependencies">
@@ -64,7 +66,7 @@
 python
 </pre></div>
 </div>
-<p>Let&#8217;s get the top 50 posts on HackerNews</p>
+<p>Let&#8217;s get the top 100 posts on HackerNews</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">hoverpy</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -103,7 +105,7 @@ Interview with Max Levchin
 <span class="nb">time </span>taken: 15.888608 seconds.
 </pre></div>
 </div>
-<p>Time taken: <strong>15.888608 seconds</strong>. I don&#8217;t know about you, but working with dependencies that take a while 15 seconds on each run is simply not workable. So Let&#8217;s now see what happens when we run this code in simulate mode.</p>
+<p>Time taken: <strong>15.888608 seconds</strong>. I don&#8217;t know about you, but working with dependencies that take around 15 seconds on each run is simply not workable. So Let&#8217;s now see what happens when we run this code in simulate mode.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>./hn_titles.py --capture
 
 <span class="o">[</span>...<span class="o">]</span>
@@ -114,6 +116,10 @@ Interview with Max Levchin
 </pre></div>
 </div>
 <p>Time taken: <strong>0.196227 seconds</strong>. That&#8217;s a lot better!</p>
+</div>
+<div class="section" id="data-mining-and-caching">
+<h2>Data mining and caching<a class="headerlink" href="#data-mining-and-caching" title="Permalink to this headline">¶</a></h2>
+<p>In this example we are going to use Hoverfly to harvest our data, however please remember it also caches POSTS, PUTS etc. as well as all for mutating responses via middleware. In fact I could have used it with libraries like Praw or Haxor, but I decided to hit the endpoints directly for efficiency.</p>
 </div>
 <div class="section" id="building-an-hn-or-reddit-classifier">
 <h2>Building an HN or Reddit classifier<a class="headerlink" href="#building-an-hn-or-reddit-classifier" title="Permalink to this headline">¶</a></h2>
@@ -200,10 +206,10 @@ Enter title:
 <p>Scikitlearn has a high level component that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span>
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfTransformer</span>
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">SGDClassifier</span>
-<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
 
-<span class="n">text_clf</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s">&#39;vect&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">()),</span>
+<span class="n">count_vect</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">()</span>
+<span class="n">X_train_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can check the score for various tokens, i.e.</p>
@@ -212,12 +218,48 @@ Enter title:
 </div>
 <p>Output: 13350</p>
 <p>We need to build a tf–idf (term frequency times inverse document frequency) transformer. This is to prevent larger documents to score higher, by having occurances score higher due to document size instead of token term relevance, which is why the fix is to divide the term frequencies by the document size.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">text_clf</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([(</span><span class="s">&#39;vect&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">()),</span>
-                     <span class="p">(</span><span class="s">&#39;tfidf&#39;</span><span class="p">,</span> <span class="n">TfidfTransformer</span><span class="p">()),</span>
-                     <span class="p">(</span><span class="s">&#39;clf&#39;</span><span class="p">,</span> <span class="n">SGDClassifier</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;hinge&#39;</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s">&#39;l2&#39;</span><span class="p">,</span>
-                                           <span class="n">alpha</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)),</span>
-                     <span class="p">])</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">text_clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">titles</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">X_train_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span>
+
+<span class="n">tfidf_transformer</span> <span class="o">=</span> <span class="n">TfidfTransformer</span><span class="p">()</span>
+<span class="n">X_train_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_counts</span><span class="p">)</span>
+
+<span class="n">clf</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_tfidf</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And finally our <code class="docutils literal"><span class="pre">predict</span></code> function, which takes an array of sentences.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">sentences</span><span class="p">):</span>
+    <span class="n">X_new_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">sentences</span><span class="p">)</span>
+    <span class="n">X_new_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_new_counts</span><span class="p">)</span>
+
+    <span class="n">predicted</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_new_tfidf</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%r</span><span class="s"> =&gt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">subs</span><span class="p">[</span><span class="n">category</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>We can now run our example sentences, and go into our main prediction loop.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&quot;powershell and openssl compatability testing&quot;</span><span class="p">,</span>
+    <span class="s">&quot;compiling source code on ubuntu&quot;</span><span class="p">,</span>
+    <span class="s">&quot;wifi drivers keep crashing&quot;</span><span class="p">,</span>
+    <span class="s">&quot;cron jobs&quot;</span><span class="p">,</span>
+    <span class="s">&quot;training day was a great movie with a legendary director&quot;</span><span class="p">,</span>
+    <span class="s">&quot;michael bay should remake lord of the rings, set in the future&quot;</span><span class="p">,</span>
+    <span class="s">&quot;hilary clinton may win voters&#39; hearts&quot;</span><span class="p">,</span>
+    <span class="s">&quot;donald trump may donimate the presidency&quot;</span><span class="p">,</span>
+    <span class="s">&quot;reading dead wood gives me far more pleasure than using kindles&quot;</span><span class="p">,</span>
+    <span class="s">&quot;hiring a back end engineer&quot;</span><span class="p">,</span>
+    <span class="s">&quot;guitar is louder than the piano although electronic is best&quot;</span><span class="p">,</span>
+    <span class="s">&quot;drum solo and singer from the rolling stones&quot;</span><span class="p">,</span>
+    <span class="s">&quot;hiring a back end engineer&quot;</span><span class="p">,</span>
+    <span class="s">&quot;javascript loader&quot;</span><span class="p">,</span>
+    <span class="s">&quot;dostoevsky&#39;s existentialism&quot;</span>
+<span class="p">]</span>
+
+<span class="n">predict</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">predict</span><span class="p">([</span><span class="nb">raw_input</span><span class="p">(</span><span class="s">&quot;Enter title: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()])</span>
 </pre></div>
 </div>
 </div>
@@ -231,9 +273,10 @@ Enter title:
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Dependable dependencies, and machine learning.</a><ul>
+<li><a class="reference internal" href="#">Buliding a Python  social media classifier using a GoLang Service Virtualiser.</a><ul>
 <li><a class="reference internal" href="#you-are-affected-but-the-problem-wasn-t-you">You are affected, but the problem wasn&#8217;t you</a></li>
 <li><a class="reference internal" href="#virtualising-dependencies">Virtualising Dependencies</a></li>
+<li><a class="reference internal" href="#data-mining-and-caching">Data mining and caching</a></li>
 <li><a class="reference internal" href="#building-an-hn-or-reddit-classifier">Building an HN or Reddit classifier</a></li>
 </ul>
 </li>

@@ -18,9 +18,9 @@ Let's begin by cloning the only repo we'll need for this post:
 .. code-block:: bash
 
     git clone https://github.com/shyal/hoverpy-scikitlearn.git
-    cd hoverpy-scikilearn
+    cd hoverpy-scikitlearn
     virtualenv .venv
-    source .venv/bin/activate.sh
+    source .venv/bin/activate
     pip install -i https://testpypi.python.org/pypi hoverpy
     pip install haxor praw
 

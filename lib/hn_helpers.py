@@ -1,6 +1,7 @@
 import requests
 import time
 import hoverpy
+import os
 
 
 def getHNItem(prot, item, args):
@@ -30,8 +31,8 @@ def getHNItem(prot, item, args):
     return text
 
 
-def getHNData(sub, args):
-    hp = hoverpy.HoverPy(capture=args.capture, dbpath="hn.db")
+def getHNDataComments(sub, args):
+    hp = hoverpy.HoverPy(capture=args.capture, dbpath=("data/hn.%s.db" % sub))
     print("getting hn %s - this may take a while!" % sub)
     prot = "https" if args.capture else "http"
     start = time.time()
@@ -45,6 +46,29 @@ def getHNData(sub, args):
     print("got %i titles in %f seconds" % (len(titles), end))
 
     return titles
+
+from hackernews import HackerNews
+
+
+def getHNData(args, comments=False, limit=100, sub="showstories"):
+    dbpath = "data/hn.%s.db" % sub
+    capture = not os.path.isfile(dbpath)
+
+    with hoverpy.HoverPy(capture=capture, dbpath=dbpath, httpsToHttp=True):
+        hn = HackerNews()
+        titles = []
+        print "GETTING HACKERNEWS DATA"
+        subs = {"showstories": hn.show_stories,
+                "askstories": hn.ask_stories,
+                "jobstories": hn.job_stories}
+        for story_id in subs[sub](limit=limit):
+            story = hn.get_item(story_id)
+            if args.verbose:
+                print(story.title.lower())
+            titles.append(story.title.lower())
+        print("got %i hackernews titles" % len(titles))
+        return titles
+
 
 if __name__ == "__main__":
     getHNData("topstories", True, True)

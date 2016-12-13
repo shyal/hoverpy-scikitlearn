@@ -112,7 +112,6 @@ def getRedditData(args, comments=True, limit=100, sub="all"):
             if comments:
                 flat_comments = praw.helpers.flatten_tree(submission.comments)
                 for comment in flat_comments:
-                    print(comment)
                     if hasattr(comment, 'body'):
                         text += comment.body + " "
             if args.verbose:

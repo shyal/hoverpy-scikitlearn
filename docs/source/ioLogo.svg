@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="200"
+   height="150"
+   viewBox="0 0 200 150"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   inkscape:export-filename="/Users/shyal/dev/ioloop/public/img/iologo.png"
+   inkscape:export-xdpi="118.82"
+   inkscape:export-ydpi="118.82"
+   sodipodi:docname="iologo.svg">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 999.99998 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective3402" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4246875"
+     inkscape:cx="60.244372"
+     inkscape:cy="45.119138"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1162"
+     inkscape:window-height="656"
+     inkscape:window-x="1440"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     units="px" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-513.64062,-296.66527)">
+    <path
+       inkscape:export-ydpi="118.82"
+       inkscape:export-xdpi="118.82"
+       inkscape:export-filename="/Users/shyal/dev/ioloop/public/favicon.png"
+       sodipodi:nodetypes="scscccccccsscsssscsssccssssssssss"
+       inkscape:connector-curvature="0"
+       id="path3444"
+       d="m 646.00287,307.40406 c -1.30013,0.002 -2.60744,0.0514 -3.9173,0.1344 -8.09062,0.51532 -15.21971,2.322 -22.00426,5.57689 -5.92847,2.84408 -11.85044,7.04228 -16.32625,11.58335 l -1.57538,1.60068 1.31417,1.77749 c 1.48477,2.01139 5.22874,7.5892 6.74785,10.05863 1.6949,2.75523 5.21326,8.8283 7.12701,12.29943 l 1.81118,3.28548 1.19627,-1.50795 c 7.37532,-9.3076 14.76927,-13.51146 24.48944,-13.90006 7.25497,-0.29012 14.22847,1.91425 20.08353,6.34349 1.58672,1.20039 4.52808,4.15018 5.72848,5.73691 5.71898,7.56015 7.71503,17.06051 5.47576,26.09852 -1.39764,5.64112 -4.03219,10.29147 -8.18836,14.44763 -1.95351,1.95347 -3.49505,3.18695 -5.6864,4.5407 -9.7331,6.01277 -22.67882,6.08284 -31.66692,0.17704 -5.98014,-3.9294 -11.54067,-10.75771 -18.2976,-22.48445 -0.80762,-1.40158 -3.70463,-6.6141 -6.44457,-11.58335 -6.65331,-12.06692 -7.85528,-14.12225 -11.49075,-19.69603 -5.56604,-8.53382 -11.09135,-15.09369 -16.93282,-20.09196 -2.56304,-2.19311 -5.214,-4.03321 -7.91882,-5.70322 l 0,44.26964 c 0.54025,0.85442 1.06678,1.61041 1.61746,2.5357 2.42136,4.06871 2.97969,5.04915 7.85143,13.90011 2.57148,4.67194 5.33505,9.64268 6.14133,11.04426 4.5121,7.8436 9.37638,14.99118 13.79898,20.26042 2.12369,2.53023 7.06435,7.47186 9.24986,9.25829 10.23456,8.36591 20.70928,12.52482 33.7983,13.41145 14.73948,0.99856 29.4346,-3.36079 41.18637,-12.20679 15.59455,-11.73856 24.78425,-30.06596 24.78425,-49.4169 0,-13.21898 -4.41506,-26.43851 -12.35843,-36.99109 -11.85809,-15.75337 -30.09187,-24.79073 -49.59381,-24.75894 z"
+       style="opacity:1;fill:#4d4d4d" />
+    <path
+       inkscape:export-ydpi="118.82"
+       inkscape:export-xdpi="118.82"
+       inkscape:export-filename="/Users/shyal/dev/ioloop/public/favicon.png"
+       sodipodi:nodetypes="ccsccccc"
+       inkscape:connector-curvature="0"
+       style="opacity:1;fill:#4d4d4d"
+       d="m 569.52713,391.47851 0,30.52965 c 1.86272,-1.17055 3.69193,-2.41293 5.45051,-3.82466 1.68331,-1.3513 4.90182,-4.23658 6.25079,-5.61054 l 0.91829,-0.93511 -0.80029,-1.12888 c -1.56374,-2.18065 -5.56516,-8.25862 -7.09331,-10.77462 -1.15331,-1.89905 -3.00968,-5.22017 -4.72599,-8.25584 z"
+       id="path3446" />
+    <path
+       inkscape:export-ydpi="118.82"
+       inkscape:export-xdpi="118.82"
+       inkscape:export-filename="/Users/shyal/dev/ioloop/public/favicon.png"
+       sodipodi:nodetypes="cccccscccccccc"
+       inkscape:connector-curvature="0"
+       id="path3448"
+       d="m 521.97197,356.07564 c -0.26741,0.16499 -0.46591,0.33368 -0.71608,0.49705 l 0,38.41032 0,31.81013 0,1.71015 c 4.01268,1.13384 8.17473,1.92125 12.48486,2.27454 1.97348,0.16174 8.27878,0.0714 10.50503,-0.15155 3.68178,-0.36891 7.20602,-1.06511 10.60621,-2.03026 l 0,-1.80283 0,-32.13867 0,-38.14917 c -0.2651,-0.18399 -0.5346,-0.3944 -0.8003,-0.56444 -4.64455,-2.9777 -10.22478,-4.45519 -15.86293,-4.4303 -5.63816,0.0278 -11.33415,1.54859 -16.21679,4.56489 z"
+       style="opacity:1;fill:#4d4d4d" />
+    <circle
+       style="opacity:1;fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3454"
+       cx="537.01294"
+       cy="323.05695"
+       r="15.520542"
+       inkscape:export-filename="/Users/shyal/dev/ioloop/public/favicon.png"
+       inkscape:export-xdpi="118.82"
+       inkscape:export-ydpi="118.82" />
+  </g>
+</svg>

@@ -53,9 +53,9 @@
 <p>What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you&#8217;ll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-tight, blazingly fast, and <strong>utterly failure proof</strong>.</p>
 <p>Let&#8217;s begin by cloning the only repo we&#8217;ll need for this post:</p>
 <div class="highlight-bash"><div class="highlight"><pre>git clone https://github.com/shyal/hoverpy-scikitlearn.git
-<span class="nb">cd </span>hoverpy-scikilearn
+<span class="nb">cd </span>hoverpy-scikitlearn
 virtualenv .venv
-<span class="nb">source</span> .venv/bin/activate.sh
+<span class="nb">source</span> .venv/bin/activate
 pip install -i https://testpypi.python.org/pypi hoverpy
 pip install haxor praw
 </pre></div>
@@ -299,6 +299,11 @@ pip install haxor praw
 <span class="k">class</span> <span class="nc">test_classifier</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">test_classifier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">scipy</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;scipy module not installed - quitting&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
         <span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">dataMiner</span>
 
         <span class="n">titles</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">dataMiner</span><span class="o">.</span><span class="n">doMining</span><span class="p">()</span>
@@ -322,10 +327,7 @@ pip install haxor praw
             <span class="n">predicted</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_new_tfidf</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">answer</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">answers</span><span class="p">):</span>
-                <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%r</span><span class="s"> =&gt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">dataMiner</span><span class="o">.</span><span class="n">subs</span><span class="p">[</span><span class="n">category</span><span class="p">]))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">dataMiner</span><span class="o">.</span><span class="n">subs</span><span class="p">[</span><span class="n">category</span><span class="p">],</span> <span class="n">answer</span><span class="p">)</span>
-
-        <span class="k">print</span> <span class="s">&quot;*&quot;</span><span class="o">*</span><span class="mi">30</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">TEST CLASSIFIER</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="s">&quot;*&quot;</span><span class="o">*</span><span class="mi">30</span>
 
         <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s">&quot;powershell and openssl compatability testing&quot;</span><span class="p">,</span>
@@ -347,6 +349,8 @@ pip install haxor praw
     <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>In fact we can be so confident about our tests using HoverFly, that we can rest assured our travis tests will most likely never fail. No matter what.</p>
+<a class="reference external image-reference" href="https://travis-ci.org/shyal/hoverpy-scikitlearn"><img alt="https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master" src="https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master" /></a>
 </div>
 </div>
 

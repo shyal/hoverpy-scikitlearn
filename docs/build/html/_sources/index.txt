@@ -18,9 +18,9 @@ Let's begin by cloning the only repo we'll need for this post:
 .. code-block:: bash
 
     git clone https://github.com/shyal/hoverpy-scikitlearn.git
-    cd hoverpy-scikilearn
+    cd hoverpy-scikitlearn
     virtualenv .venv
-    source .venv/bin/activate.sh
+    source .venv/bin/activate
     pip install -i https://testpypi.python.org/pypi hoverpy
     pip install haxor praw
 
@@ -148,3 +148,8 @@ Taking it one step further with testing
 At this point I'm hoping you see how water tight this code is. But one is never above unit testing. What is great is that, at this point, since we have zero external data dependencies, the chances of the tests failing are virtually none.
 
 .. literalinclude:: ../../test_social_media.py
+
+In fact we can be so confident about our tests using HoverFly, that we can rest assured our travis tests will most likely never fail. No matter what.
+
+.. image:: https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master
+    :target: https://travis-ci.org/shyal/hoverpy-scikitlearn

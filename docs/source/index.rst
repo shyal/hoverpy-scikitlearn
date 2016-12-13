@@ -149,5 +149,7 @@ At this point I'm hoping you see how water tight this code is. But one is never 
 
 .. literalinclude:: ../../test_social_media.py
 
-In fact we can be so confident about our tests using HoverFly, that we can rest assured our travis tests will most likely never fail. No matter what.
+In fact we can be so confident about our tests using HoverFly, that we can rest assured if our tests fail, or if we have issues then it will only have to do with our environment, or software dependencies; but not our data dependencies.
 
+.. image:: https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master
+    :target: https://travis-ci.org/shyal/hoverpy-scikitlearn

@@ -1,0 +1,32 @@
+getting hn showstories - this may take a while!
+got 63 titles in 1.221211 seconds
+getting hn askstories - this may take a while!
+got 80 titles in 5.147536 seconds
+getting hn jobstories - this may take a while!
+got 22 titles in 0.046783 seconds
+getting reddit data for republican
+getting reddit data for democrat
+getting reddit data for linux
+getting reddit data for music
+getting reddit data for movies
+getting reddit data for literature
+getting reddit data for books
+******************************
+TEST CLASSIFIER
+******************************
+'powershell and openssl compatability testing' => ('reddit', 'linux')
+'compiling source code on ubuntu' => ('reddit', 'linux')
+'wifi drivers keep crashing' => ('reddit', 'linux')
+'cron jobs' => ('reddit', 'republican')
+'training day was a great movie with a legendary director' => ('reddit', 'movies')
+'michael bay should remake lord of the rings, set in the future' => ('reddit', 'books')
+"hilary clinton may win voters' hearts" => ('reddit', 'republican')
+'donald trump may donimate the presidency' => ('reddit', 'republican')
+'reading dead wood gives me far more pleasure than using kindles' => ('reddit', 'books')
+'hiring a back end engineer' => ('hn', 'jobstories')
+'guitar is louder than the piano although electronic is best' => ('reddit', 'music')
+'drum solo and singer from the rolling stones' => ('reddit', 'music')
+'hiring a back end engineer' => ('hn', 'jobstories')
+'javascript loader' => ('hn', 'showstories')
+"dostoevsky's existentialism" => ('reddit', 'literature')
+Enter title: 

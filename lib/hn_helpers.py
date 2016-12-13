@@ -16,7 +16,8 @@ def getHNItem(prot, item, args):
                     print("got url %s" % url)
                     print(title)
                 text = title
-            if args.text and j.type in ["story", "comment"] and "text" in j:
+            if args.comments and j["type"] in [
+                    "story", "comment"] and "text" in j:
                 post_text = j["text"].lower()
                 if args.verbose:
                     print("got url %s" % url)
@@ -25,7 +26,7 @@ def getHNItem(prot, item, args):
             if args.comments and "kids" in j:
                 kids = j["kids"]
                 for kid in kids:
-                    text += getHNItem(prot, kid, args.verbose)
+                    text += getHNItem(prot, kid, args)
     return text
 
 

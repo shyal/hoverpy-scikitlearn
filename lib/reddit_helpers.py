@@ -1,9 +1,10 @@
 import requests
 import hoverpy
 import time
+import os
 
 
-def getRedditComments(args, sub, id):
+def getRedditComments(args, capture, sub, id):
 
     success = False
 
@@ -31,11 +32,12 @@ def getRedditComments(args, sub, id):
 
                 return text
 
-            print("got comment for id %s" % id)
+            if args.verbose or capture:
+                print("got comment for id %s" % id)
             return extractComments(comments)
         else:
-            if args.capture:
-                print "couldn't get comment thread!"
+            if args.verbose or capture:
+                print "couldn't get comment thread %s" % id
                 time.sleep(1)
             else:
                 break
@@ -44,11 +46,12 @@ def getRedditComments(args, sub, id):
 
 
 def getRedditData(args, limit=100, sub="all"):
-    with hoverpy.HoverPy(capture=args.capture,
-                         dbpath=("data/reddit.%s.db" % sub)):
+    dbpath = "data/reddit.%s.db" % sub
+    capture = not os.path.isfile(dbpath)
+    with hoverpy.HoverPy(capture=capture,
+                         dbpath=dbpath):
 
         print("getting reddit data for %s" % (sub))
-        print("*"*50)
 
         success = False
         titles = []
@@ -72,26 +75,15 @@ def getRedditData(args, limit=100, sub="all"):
                             selftext = d["data"]["selftext"].lower()
                             text += selftext
                         titles.append(text)
-                        text += getRedditComments(args, sub, d["data"]["id"])
+                        text += getRedditComments(args,
+                                                  capture,
+                                                  sub,
+                                                  d["data"]["id"])
             else:
-                if args.capture:
+                if capture:
                     print(r.json())
                     time.sleep(1)
                 else:
                     break
 
         return titles
-
-if __name__ == "__main__":
-    class Args:
-
-        def __init__(self):
-            self.capture = True
-
-    # print getRedditData(Args(), sub="books")
-
-#    print getRedditData(Args(), sub="movies")
-    getRedditData(Args(), sub="music")
-    #
-    # with hoverpy.HoverPy(capture=False, dbpath="reddit.db"):
-    #     print getRedditComments("books", "5hwj6m")

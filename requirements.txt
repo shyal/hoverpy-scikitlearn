@@ -1,2 +1,2 @@
 haxor
-praw
+praw==3.5.0

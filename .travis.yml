@@ -1,5 +1,7 @@
 language: python
 python:
   - "2.7"
+install:
+  - pip install -i https://testpypi.python.org/pypi hoverpy
 script: python test_social_media.py
 

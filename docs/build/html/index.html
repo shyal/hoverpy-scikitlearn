@@ -45,18 +45,19 @@
 <ul class="simple">
 </ul>
 </div>
-<p>At times I want to grab a bunch of data, use it, and spit something out the other end. From time to time I get paid to do this, too. But the world of online dependencies is far less predictable than I&#8217;d like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investigating, and incorporating into my toolset.</p>
+<p>At times I want to grab a bunch of data, use it, and spit something out the other end. From time to time I get paid to do this, too. But the world of online dependencies is far less predictable than I&#8217;d like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investing in, and incorporating into my toolset.</p>
 <div class="figure">
 <img alt="hat" src="_images/hat.jpg" />
 </div>
 <p>Well I recently came across an ultra-high-performance proxy, written in Go, called <a class="reference external" href="http://www.hoverfly.io/">HoverFly</a>. So I decided to write a light-weight Python binding to it: <a class="reference external" href="http://www.hoverpy.io/">HoverPy</a>. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I&#8217;ll take you through using this very thin Python layer to build a classifier using scikit-learn, with HackerNews and Reddit as its endpoints.</p>
-<p>What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you&#8217;ll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-right, blazingly fast, and <strong>utterly failure proof</strong>.</p>
+<p>What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you&#8217;ll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-tight, blazingly fast, and <strong>utterly failure proof</strong>.</p>
 <p>Let&#8217;s begin by cloning the only repo we&#8217;ll need for this post:</p>
 <div class="highlight-bash"><div class="highlight"><pre>git clone https://github.com/shyal/hoverpy-scikitlearn.git
 <span class="nb">cd </span>hoverpy-scikilearn
 virtualenv .venv
 <span class="nb">source</span> .venv/bin/activate.sh
-pip install hoverpy haxor praw
+pip install -i https://testpypi.python.org/pypi hoverpy
+pip install haxor praw
 </pre></div>
 </div>
 <div class="section" id="data-mining-hackernews-and-reddit">
@@ -107,7 +108,7 @@ pip install hoverpy haxor praw
 <div class="highlight-bash"><div class="highlight"><pre>got <span class="m">100</span> hackernews titles in 14.678717 seconds
 </pre></div>
 </div>
-<p>You may notice a blot database was created inside data:</p>
+<p>You may notice a bolt database was created inside the <code class="docutils literal"><span class="pre">./data</span></code> directory:</p>
 <div class="highlight-bash"><div class="highlight"><pre>ll data/hn.topstories.db
 -rw-------  <span class="m">1</span> ioloop  staff  <span class="m">262144</span> Dec <span class="m">13</span> 15:27 data/hn.topstories.db
 </pre></div>
@@ -120,13 +121,13 @@ pip install hoverpy haxor praw
 <div class="highlight-bash"><div class="highlight"><pre>got <span class="m">100</span> hackernews titles in 0.180554 seconds
 </pre></div>
 </div>
-<p>This is roughly an <strong>80x speedup</strong>, that&#8217;s fast enough to start thinking of hitting our endpoint as being as efficient as hitting a database.</p>
-<p>We can do the same with <a class="reference external" href="https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/lib/redditMiner.py">lib/redditMiner.py</a>: <code class="docutils literal"><span class="pre">python</span> <span class="pre">lib/redditMiner.py</span></code>. But I think you got the picture.</p>
+<p>This is roughly an <strong>80x speedup</strong>, <em>hitting our endpoint is starting to feel more like hitting a database</em> which is probably the key point to this chapter.</p>
+<p>Note regarding reddit: we can do the same with <a class="reference external" href="https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/lib/redditMiner.py">lib/redditMiner.py</a>: <code class="docutils literal"><span class="pre">python</span> <span class="pre">lib/redditMiner.py</span></code>. But I think you got the picture.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="putting-our-miners-together">
 <h2>Putting our miners together<a class="headerlink" href="#putting-our-miners-together" title="Permalink to this headline">¶</a></h2>
-<p>Let&#8217;s go ahead and write a <code class="docutils literal"><span class="pre">doMining</span></code> function that&#8217;ll bring in all the data we need from the HN sections, and Reddit subs.</p>
+<p>Let&#8217;s go ahead and write a <code class="docutils literal"><span class="pre">doMining</span></code> function that&#8217;ll bring in all the data we need from the HN sections, and Reddit subs. You&#8217;ll need to run this file directly, as it&#8217;s in the <code class="docutils literal"><span class="pre">./lib</span></code> folder, unless you want to sit around while all the data re-downloads (you don&#8217;t).</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">subs</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;showstories&#39;</span><span class="p">),</span>
         <span class="p">(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;askstories&#39;</span><span class="p">),</span>
         <span class="p">(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;jobstories&#39;</span><span class="p">),</span>
@@ -162,6 +163,10 @@ pip install hoverpy haxor praw
     <span class="n">doMining</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>command:</p>
+<div class="highlight-bash"><div class="highlight"><pre>python lib/dataMiner.py
+</pre></div>
+</div>
 <p>That&#8217;s really all we need, and thanks to HoverFly the entire process, once cached, is blazingly fast. Let&#8217;s move on to our next step.</p>
 </div>
 <div class="section" id="building-an-hn-or-reddit-classifier">
@@ -171,44 +176,7 @@ pip install hoverpy haxor praw
 </pre></div>
 </div>
 <p>This spins up our classifier:</p>
-<div class="highlight-python"><div class="highlight"><pre>getting hn showstories - this may take a while!
-got 63 titles in 1.221211 seconds
-getting hn askstories - this may take a while!
-got 80 titles in 5.147536 seconds
-getting hn jobstories - this may take a while!
-got 22 titles in 0.046783 seconds
-getting reddit data for republican
-getting reddit data for democrat
-getting reddit data for linux
-getting reddit data for music
-getting reddit data for movies
-getting reddit data for literature
-getting reddit data for books
-******************************
-TEST CLASSIFIER
-******************************
-&#39;powershell and openssl compatability testing&#39; =&gt; (&#39;reddit&#39;, &#39;linux&#39;)
-&#39;compiling source code on ubuntu&#39; =&gt; (&#39;reddit&#39;, &#39;linux&#39;)
-&#39;wifi drivers keep crashing&#39; =&gt; (&#39;reddit&#39;, &#39;linux&#39;)
-&#39;cron jobs&#39; =&gt; (&#39;reddit&#39;, &#39;republican&#39;)
-&#39;training day was a great movie with a legendary director&#39; =&gt; (&#39;reddit&#39;, &#39;movies&#39;)
-&#39;michael bay should remake lord of the rings, set in the future&#39; =&gt; (&#39;reddit&#39;, &#39;books&#39;)
-&quot;hilary clinton may win voters&#39; hearts&quot; =&gt; (&#39;reddit&#39;, &#39;republican&#39;)
-&#39;donald trump may donimate the presidency&#39; =&gt; (&#39;reddit&#39;, &#39;republican&#39;)
-&#39;reading dead wood gives me far more pleasure than using kindles&#39; =&gt; (&#39;reddit&#39;, &#39;books&#39;)
-&#39;hiring a back end engineer&#39; =&gt; (&#39;hn&#39;, &#39;jobstories&#39;)
-&#39;guitar is louder than the piano although electronic is best&#39; =&gt; (&#39;reddit&#39;, &#39;music&#39;)
-&#39;drum solo and singer from the rolling stones&#39; =&gt; (&#39;reddit&#39;, &#39;music&#39;)
-&#39;hiring a back end engineer&#39; =&gt; (&#39;hn&#39;, &#39;jobstories&#39;)
-&#39;javascript loader&#39; =&gt; (&#39;hn&#39;, &#39;showstories&#39;)
-&quot;dostoevsky&#39;s existentialism&quot; =&gt; (&#39;reddit&#39;, &#39;literature&#39;)
-Enter title: 
-</pre></div>
-</div>
-<p>Everything under <em>TEST CLASSIFIER</em> is the result of running these strings through the classifier. Let&#8217;s break this down, and see how it works. Feel free to type in text, and see how the classifier holds up. See whether you can formuate sentences that would fall within the specified subs.</p>
-</div>
-<div class="section" id="social-media-py">
-<h2>./social_media.py<a class="headerlink" href="#social-media-py" title="Permalink to this headline">¶</a></h2>
+<script type="text/javascript" src="https://asciinema.org/a/626zkc3hduwfd7328aqme4wgl.js" id="asciicast-626zkc3hduwfd7328aqme4wgl" async></script><p>This is our whole classifier, and application entry point, <code class="docutils literal"><span class="pre">./social_media.py</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">dataMiner</span>
 
 <span class="n">titles</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">dataMiner</span><span class="o">.</span><span class="n">doMining</span><span class="p">()</span>
@@ -222,56 +190,163 @@ Enter title:
 
 <span class="n">tfidf_transformer</span> <span class="o">=</span> <span class="n">TfidfTransformer</span><span class="p">()</span>
 <span class="n">X_train_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_counts</span><span class="p">)</span>
+
+<span class="n">clf</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_tfidf</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">sentences</span><span class="p">):</span>
+    <span class="n">X_new_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">sentences</span><span class="p">)</span>
+    <span class="n">X_new_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_new_counts</span><span class="p">)</span>
+
+    <span class="n">predicted</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_new_tfidf</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%r</span><span class="s"> =&gt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">dataMiner</span><span class="o">.</span><span class="n">subs</span><span class="p">[</span><span class="n">category</span><span class="p">]))</span>
+
+<span class="k">print</span> <span class="s">&quot;*&quot;</span><span class="o">*</span><span class="mi">30</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">TEST CLASSIFIER</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="s">&quot;*&quot;</span><span class="o">*</span><span class="mi">30</span>
+
+<span class="n">predict</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&quot;./sentences.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">predict</span><span class="p">([</span><span class="nb">raw_input</span><span class="p">(</span><span class="s">&quot;Enter title: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()])</span>
 </pre></div>
 </div>
-<p>Scikitlearn has a high level component <code class="docutils literal"><span class="pre">CountVectorizer</span></code> that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s">&quot;powershell and openssl compatability testing&quot;</span><span class="p">,</span>
-    <span class="s">&quot;compiling source code on ubuntu&quot;</span><span class="p">,</span>
-    <span class="s">&quot;wifi drivers keep crashing&quot;</span><span class="p">,</span>
-    <span class="s">&quot;cron jobs&quot;</span><span class="p">,</span>
-    <span class="s">&quot;training day was a great movie with a legendary director&quot;</span><span class="p">,</span>
+<p>Let&#8217;s break it down a little.</p>
+<p>Scikit-learn has a high level component <code class="docutils literal"><span class="pre">CountVectorizer</span></code> that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">count_vect</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">()</span>
+<span class="n">X_train_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can check the score for various tokens, i.e.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">count_vect</span><span class="o">.</span><span class="n">vocabulary_</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">u&quot;solarcity&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">count_vect</span><span class="o">.</span><span class="n">vocabulary_</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">u&quot;python&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Output: 13350</p>
-<p>We need to build a tf–idf (term frequency times inverse document frequency) transformer. This is to prevent larger documents to score higher, by having occurances score higher due to document size instead of token term relevance, which is why the fix is to divide the term frequencies by the document size.</p>
-<div class="highlight-python"><div class="highlight"><pre>    <span class="s">&quot;training day was a great movie with a legendary director&quot;</span><span class="p">,</span>
-    <span class="s">&quot;michael bay should remake lord of the rings, set in the future&quot;</span><span class="p">,</span>
-    <span class="s">&quot;hilary clinton may win voters&#39; hearts&quot;</span><span class="p">,</span>
-    <span class="s">&quot;donald trump may donimate the presidency&quot;</span><span class="p">,</span>
-    <span class="s">&quot;reading dead wood gives me far more pleasure than using kindles&quot;</span><span class="p">,</span>
-    <span class="s">&quot;hiring a back end engineer&quot;</span><span class="p">,</span>
+<p>The word python appears a total of 21567 in this corpus.</p>
+<p>We need to build a tf–idf (term frequency times inverse document frequency) transformer.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tfidf_transformer</span> <span class="o">=</span> <span class="n">TfidfTransformer</span><span class="p">()</span>
+<span class="n">X_train_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_counts</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>This is to prevent larger documents to score higher, by having occurances score higher due to document size instead of token term relevance, which is why the fix is to divide the term frequencies by the document size.</p>
 <p>And finally our <code class="docutils literal"><span class="pre">predict</span></code> function, which takes an array of sentences.</p>
-<div class="highlight-python"><div class="highlight"><pre>    <span class="s">&quot;hiring a back end engineer&quot;</span><span class="p">,</span>
-    <span class="s">&quot;javascript loader&quot;</span><span class="p">,</span>
-    <span class="s">&quot;dostoevsky&#39;s existentialism&quot;</span>
-<span class="p">]</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">sentences</span><span class="p">):</span>
+    <span class="n">X_new_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">sentences</span><span class="p">)</span>
+    <span class="n">X_new_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_new_counts</span><span class="p">)</span>
 
-<span class="n">predict</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
+    <span class="n">predicted</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_new_tfidf</span><span class="p">)</span>
 
-<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%r</span><span class="s"> =&gt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">dataMiner</span><span class="o">.</span><span class="n">subs</span><span class="p">[</span><span class="n">category</span><span class="p">]))</span>
 </pre></div>
 </div>
-<p>We can now run our example sentences, and go into our main prediction loop.</p>
 </div>
-<div class="section" id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
-<p>Indulge me, dear reader, with this thought expriment. Imagine a whole department of developers standing up at once, glancing at each other, and walking away for an &#8220;extended lunch-break&#8221; while the department next door desperately scrambles to get the culprit service back up.</p>
-<p>You suddenly realise it&#8217;s not only you who can no longer work: no one can. Little by little, chaos sets in: people start wondering around, talking about their weekends, playing table football, throwing things around. This is the corporate equivalent to a big money bonfire.</p>
-<p>Now here comes the thought expement: what could you have done, as an engineer, to prevent this all to common situation?</p>
+<hr class="docutils" />
+<div class="section" id="taking-it-one-step-further-with-testing">
+<h2>Taking it one step further with testing<a class="headerlink" href="#taking-it-one-step-further-with-testing" title="Permalink to this headline">¶</a></h2>
+<p>At this point I&#8217;m hoping you see how water tight this code is. But one is never above unit testing. What is great is that, at this point, since we have zero external data dependencies, the chances of the tests failing are virtually none.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">hnMiner</span>
+
+
+<span class="k">class</span> <span class="nc">test_hn</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_ask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stories</span> <span class="o">=</span> <span class="n">hnMiner</span><span class="o">.</span><span class="n">getHNData</span><span class="p">(</span><span class="n">sub</span><span class="o">=</span><span class="s">&quot;jobstories&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">story</span> <span class="ow">in</span> <span class="n">stories</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s">&quot;hiring&quot;</span> <span class="ow">in</span> <span class="n">story</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stories</span> <span class="o">=</span> <span class="n">hnMiner</span><span class="o">.</span><span class="n">getHNData</span><span class="p">(</span><span class="n">sub</span><span class="o">=</span><span class="s">&quot;showstories&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">story</span> <span class="ow">in</span> <span class="n">stories</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s">&quot;show&quot;</span> <span class="ow">in</span> <span class="n">story</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stories</span> <span class="o">=</span> <span class="n">hnMiner</span><span class="o">.</span><span class="n">getHNData</span><span class="p">(</span><span class="n">sub</span><span class="o">=</span><span class="s">&quot;askstories&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">story</span> <span class="ow">in</span> <span class="n">stories</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s">&quot;ask&quot;</span> <span class="ow">in</span> <span class="n">story</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">redditMiner</span>
+
+
+<span class="k">class</span> <span class="nc">test_reddit</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">generic_sub_tester</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">):</span>
+        <span class="n">stories</span> <span class="o">=</span> <span class="n">redditMiner</span><span class="o">.</span><span class="n">getRedditData</span><span class="p">(</span><span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">story</span> <span class="ow">in</span> <span class="n">stories</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">story</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">test_linux</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generic_sub_tester</span><span class="p">(</span><span class="s">&quot;linux&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">test_linux</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generic_sub_tester</span><span class="p">(</span><span class="s">&quot;python&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">test_music</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generic_sub_tester</span><span class="p">(</span><span class="s">&quot;music&quot;</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">test_classifier</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_classifier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">dataMiner</span>
+
+        <span class="n">titles</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">dataMiner</span><span class="o">.</span><span class="n">doMining</span><span class="p">()</span>
+
+        <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span>
+        <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfTransformer</span>
+        <span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
+
+        <span class="n">count_vect</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">()</span>
+        <span class="n">X_train_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span>
+
+        <span class="n">tfidf_transformer</span> <span class="o">=</span> <span class="n">TfidfTransformer</span><span class="p">()</span>
+        <span class="n">X_train_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_counts</span><span class="p">)</span>
+
+        <span class="n">clf</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_tfidf</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">answers</span><span class="p">):</span>
+            <span class="n">X_new_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">sentences</span><span class="p">)</span>
+            <span class="n">X_new_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_new_counts</span><span class="p">)</span>
+
+            <span class="n">predicted</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_new_tfidf</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">answer</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">predicted</span><span class="p">,</span> <span class="n">answers</span><span class="p">):</span>
+                <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%r</span><span class="s"> =&gt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">dataMiner</span><span class="o">.</span><span class="n">subs</span><span class="p">[</span><span class="n">category</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">dataMiner</span><span class="o">.</span><span class="n">subs</span><span class="p">[</span><span class="n">category</span><span class="p">],</span> <span class="n">answer</span><span class="p">)</span>
+
+        <span class="k">print</span> <span class="s">&quot;*&quot;</span><span class="o">*</span><span class="mi">30</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">TEST CLASSIFIER</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="s">&quot;*&quot;</span><span class="o">*</span><span class="mi">30</span>
+
+        <span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s">&quot;powershell and openssl compatability testing&quot;</span><span class="p">,</span>
+            <span class="s">&quot;compiling source code on ubuntu&quot;</span><span class="p">,</span>
+            <span class="s">&quot;wifi drivers keep crashing&quot;</span><span class="p">,</span>
+            <span class="s">&quot;training day was a great movie with a legendary director&quot;</span>
+        <span class="p">]</span>
+
+        <span class="n">answers</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s">&quot;reddit&quot;</span><span class="p">,</span> <span class="s">&quot;linux&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">&quot;reddit&quot;</span><span class="p">,</span> <span class="s">&quot;linux&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">&quot;reddit&quot;</span><span class="p">,</span> <span class="s">&quot;linux&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">&quot;reddit&quot;</span><span class="p">,</span> <span class="s">&quot;movies&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="n">predict</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="n">answers</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
 </div>
-<div class="section" id="you-are-affected-but-the-problem-wasn-t-you">
-<h2>You are affected, but the problem wasn&#8217;t you<a class="headerlink" href="#you-are-affected-but-the-problem-wasn-t-you" title="Permalink to this headline">¶</a></h2>
-<p>One technique to avoid these &#8220;real world&#8221; unpredictabilities is mocking. And I&#8217;m not using quotes around &#8220;real world&#8221; to pretend that I know better than people who don&#8217;t. I&#8217;m using them as sometimes one has to stand in awe at the gradual decay of the internet, and how we put up with it.</p>
-<p>How many of your bookmarks no longer work? URLs fade into the darkness, and along with them your data. The issue with mocking however is that it tests your code against expected data. What happens when the network gets slow, is wrong, or fails entirely?</p>
-<p>To solve this issue I recently wrote a python binding to a wonderful Service Virtualisation application called HoverFly. HoverFly is an ultra-fast light-weight proxy written in GoLang. Using it was a true eye-opener for me, as I can now completely isolate myself from the big nasty and unpredictable world, while pretending its still there.</p>
-<p>On my search for dependencies for this blog post, I thought what better than using Hacker News and Reddit. Hacker News is hosted on firebase, which has no rate limit and is actually quite fast. Getting data from Reddit however is a completely different story all together. The rate limit is very low, making it the perfect dependency one cannot depend upon.</p>
 </div>
 </div>
 
@@ -290,9 +365,7 @@ Enter title:
 <li><a class="reference internal" href="#data-mining-hackernews-and-reddit">Data mining HackerNews and Reddit</a></li>
 <li><a class="reference internal" href="#putting-our-miners-together">Putting our miners together</a></li>
 <li><a class="reference internal" href="#building-an-hn-or-reddit-classifier">Building an HN or Reddit classifier</a></li>
-<li><a class="reference internal" href="#social-media-py">./social_media.py</a></li>
-<li><a class="reference internal" href="#testing">Testing</a></li>
-<li><a class="reference internal" href="#you-are-affected-but-the-problem-wasn-t-you">You are affected, but the problem wasn&#8217;t you</a></li>
+<li><a class="reference internal" href="#taking-it-one-step-further-with-testing">Taking it one step further with testing</a></li>
 </ul>
 </li>
 </ul>
@@ -303,13 +376,6 @@ Enter title:
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -334,9 +400,6 @@ Enter title:
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
-      |
-      <a href="_sources/index.txt"
-          rel="nofollow">Page source</a>
     </div>
 
     

@@ -76,10 +76,7 @@ class test_classifier(unittest.TestCase):
             predicted = clf.predict(X_new_tfidf)
 
             for doc, category, answer in zip(sentences, predicted, answers):
-                print('%r => %s' % (doc, dataMiner.subs[category]))
                 self.assertEquals(dataMiner.subs[category], answer)
-
-        print "*"*30+"\nTEST CLASSIFIER\n"+"*"*30
 
         tests = [
             "powershell and openssl compatability testing",

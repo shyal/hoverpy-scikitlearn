@@ -4,14 +4,14 @@ Speeding up Machine Learning using a high-performance Go proxy.
 .. toctree::
    :maxdepth: 2
 
-At times I want to grab a bunch of data, use it, and spit something out the other end. From time to time I get paid to do this, too. But the world of online dependencies is far less predictable than I'd like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investigating, and incorporating into my toolset.
+At times I want to grab a bunch of data, use it, and spit something out the other end. From time to time I get paid to do this, too. But the world of online dependencies is far less predictable than I'd like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investing in, and incorporating into my toolset.
 
 .. figure:: hat.jpg
    :alt: hat
 
 Well I recently came across an ultra-high-performance proxy, written in Go, called `HoverFly <http://www.hoverfly.io/>`_. So I decided to write a light-weight Python binding to it: `HoverPy <http://www.hoverpy.io/>`_. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I'll take you through using this very thin Python layer to build a classifier using scikit-learn, with HackerNews and Reddit as its endpoints.
 
-What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you'll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-right, blazingly fast, and **utterly failure proof**.
+What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you'll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-tight, blazingly fast, and **utterly failure proof**.
 
 Let's begin by cloning the only repo we'll need for this post:
 
@@ -21,7 +21,8 @@ Let's begin by cloning the only repo we'll need for this post:
     cd hoverpy-scikilearn
     virtualenv .venv
     source .venv/bin/activate.sh
-    pip install hoverpy haxor praw
+    pip install -i https://testpypi.python.org/pypi hoverpy
+    pip install haxor praw
 
 Data mining HackerNews and Reddit
 ---------------------------------
@@ -40,7 +41,7 @@ Output:
 
     got 100 hackernews titles in 14.678717 seconds
 
-You may notice a blot database was created inside data:
+You may notice a bolt database was created inside the ``./data`` directory:
 
 .. code-block:: bash
 
@@ -60,19 +61,25 @@ Output:
     got 100 hackernews titles in 0.180554 seconds
 
 
-This is roughly an **80x speedup**, that's fast enough to start thinking of hitting our endpoint as being as efficient as hitting a database.
+This is roughly an **80x speedup**, *hitting our endpoint is starting to feel more like hitting a database* which is probably the key point to this chapter.
 
-We can do the same with `lib/redditMiner.py <https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/lib/redditMiner.py>`_: ``python lib/redditMiner.py``. But I think you got the picture.
+Note regarding reddit: we can do the same with `lib/redditMiner.py <https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/lib/redditMiner.py>`_: ``python lib/redditMiner.py``. But I think you got the picture.
 
 ------------
 
 Putting our miners together
 ---------------------------
 
-Let's go ahead and write a ``doMining`` function that'll bring in all the data we need from the HN sections, and Reddit subs.
+Let's go ahead and write a ``doMining`` function that'll bring in all the data we need from the HN sections, and Reddit subs. You'll need to run this file directly, as it's in the ``./lib`` folder, unless you want to sit around while all the data re-downloads (you don't).
 
 .. literalinclude:: ../../lib/dataMiner.py
    :language: python
+
+command:
+
+.. code-block:: bash
+
+    python lib/dataMiner.py
 
 That's really all we need, and thanks to HoverFly the entire process, once cached, is blazingly fast. Let's move on to our next step.
 
@@ -89,32 +96,39 @@ Well now that we can transparently cache our dependencies, let's build something
 
 This spins up our classifier:
 
-.. literalinclude:: code/social_media_output.txt
+.. raw:: html
+    
+    <script type="text/javascript" src="https://asciinema.org/a/626zkc3hduwfd7328aqme4wgl.js" id="asciicast-626zkc3hduwfd7328aqme4wgl" async></script>
 
-Everything under *TEST CLASSIFIER* is the result of running these strings through the classifier. Let's break this down, and see how it works. Feel free to type in text, and see how the classifier holds up. See whether you can formuate sentences that would fall within the specified subs.
+This is our whole classifier, and application entry point, ``./social_media.py``:
 
-./social_media.py
------------------
-
-.. literalinclude:: ../../social_media.py
-   :language: python
-   :lines: 1-13
-
-Scikitlearn has a high level component ``CountVectorizer`` that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:
 
 .. literalinclude:: ../../social_media.py
    :language: python
-   :lines: 29-34
+
+Let's break it down a little.
+
+Scikit-learn has a high level component ``CountVectorizer`` that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:
+
+.. literalinclude:: ../../social_media.py
+   :language: python
+   :lines: 9-10
 
 You can check the score for various tokens, i.e.
 
 .. code-block:: python
 
-    count_vect.vocabulary_.get(u"solarcity")
+    count_vect.vocabulary_.get(u"python")
 
-Output: 13350
+The word python appears a total of 21567 in this corpus.
 
-We need to build a tf–idf (term frequency times inverse document frequency) transformer. This is to prevent larger documents to score higher, by having occurances score higher due to document size instead of token term relevance, which is why the fix is to divide the term frequencies by the document size.
+We need to build a tf–idf (term frequency times inverse document frequency) transformer.
+
+.. literalinclude:: ../../social_media.py
+   :language: python
+   :lines: 12-13
+
+This is to prevent larger documents to score higher, by having occurances score higher due to document size instead of token term relevance, which is why the fix is to divide the term frequencies by the document size.
 
 .. literalinclude:: ../../social_media.py
    :language: python
@@ -124,30 +138,16 @@ And finally our ``predict`` function, which takes an array of sentences.
 
 .. literalinclude:: ../../social_media.py
    :language: python
-   :lines: 42-49
+   :lines: 18-25
 
-We can now run our example sentences, and go into our main prediction loop.
+-----------------------------------
 
-.. literalinclude:: ../../social_media.py
-   :language: python
-   :lines: 53-75
+Taking it one step further with testing
+---------------------------------------
 
-Testing
--------
+At this point I'm hoping you see how water tight this code is. But one is never above unit testing. What is great is that, at this point, since we have zero external data dependencies, the chances of the tests failing are virtually none.
 
-Indulge me, dear reader, with this thought expriment. Imagine a whole department of developers standing up at once, glancing at each other, and walking away for an "extended lunch-break" while the department next door desperately scrambles to get the culprit service back up.
+.. literalinclude:: ../../test_social_media.py
 
-You suddenly realise it's not only you who can no longer work: no one can. Little by little, chaos sets in: people start wondering around, talking about their weekends, playing table football, throwing things around. This is the corporate equivalent to a big money bonfire.
+In fact we can be so confident about our tests using HoverFly, that we can rest assured our travis tests will most likely never fail. No matter what.
 
-Now here comes the thought expement: what could you have done, as an engineer, to prevent this all to common situation?
-
-You are affected, but the problem wasn't you
---------------------------------------------
-
-One technique to avoid these "real world" unpredictabilities is mocking. And I'm not using quotes around "real world" to pretend that I know better than people who don't. I'm using them as sometimes one has to stand in awe at the gradual decay of the internet, and how we put up with it.
-
-How many of your bookmarks no longer work? URLs fade into the darkness, and along with them your data. The issue with mocking however is that it tests your code against expected data. What happens when the network gets slow, is wrong, or fails entirely?
-
-To solve this issue I recently wrote a python binding to a wonderful Service Virtualisation application called HoverFly. HoverFly is an ultra-fast light-weight proxy written in GoLang. Using it was a true eye-opener for me, as I can now completely isolate myself from the big nasty and unpredictable world, while pretending its still there.
-
-On my search for dependencies for this blog post, I thought what better than using Hacker News and Reddit. Hacker News is hosted on firebase, which has no rate limit and is actually quite fast. Getting data from Reddit however is a completely different story all together. The rate limit is very low, making it the perfect dependency one cannot depend upon.

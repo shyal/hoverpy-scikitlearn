@@ -26,25 +26,7 @@ def predict(sentences):
 
 print "*"*30+"\nTEST CLASSIFIER\n"+"*"*30
 
-tests = [
-    "powershell and openssl compatability testing",
-    "compiling source code on ubuntu",
-    "wifi drivers keep crashing",
-    "cron jobs",
-    "training day was a great movie with a legendary director",
-    "michael bay should remake lord of the rings, set in the future",
-    "hilary clinton may win voters' hearts",
-    "donald trump may donimate the presidency",
-    "reading dead wood gives me far more pleasure than using kindles",
-    "hiring a back end engineer",
-    "guitar is louder than the piano although electronic is best",
-    "drum solo and singer from the rolling stones",
-    "hiring a back end engineer",
-    "javascript loader",
-    "dostoevsky's existentialism"
-]
-
-predict(tests)
+predict(open("./sentences.txt").readlines())
 
 while True:
     predict([raw_input("Enter title: ").strip()])

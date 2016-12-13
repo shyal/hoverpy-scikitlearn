@@ -1,29 +1,6 @@
-# from lib.parseArgs import args
+from lib import dataMiner
 
-subs = [('hn', 'showstories'),
-        ('hn', 'askstories'),
-        ('hn', 'jobstories'),
-        ('reddit', 'republican'),
-        ('reddit', 'democrat'),
-        ('reddit', 'linux'),
-        ('reddit', 'music'),
-        ('reddit', 'movies'),
-        ('reddit', 'literature'),
-        ('reddit', 'books')]
-
-titles = []
-target = []
-
-from lib.hnMiner import getHNData
-from lib.redditMiner import getRedditData
-
-getter = {'hn': getHNData, 'reddit': getRedditData}
-
-for i in range(len(subs)):
-    subTitles = getter[subs[i][0]](
-        sub=subs[i][1])
-    titles += subTitles
-    target += [i] * len(subTitles)
+titles, target = dataMiner.doMining()
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -45,7 +22,7 @@ def predict(sentences):
     predicted = clf.predict(X_new_tfidf)
 
     for doc, category in zip(sentences, predicted):
-        print('%r => %s' % (doc, subs[category]))
+        print('%r => %s' % (doc, dataMiner.subs[category]))
 
 print "*"*30+"\nTEST CLASSIFIER\n"+"*"*30
 

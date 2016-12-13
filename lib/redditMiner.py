@@ -15,7 +15,7 @@ def getRedditData(verbose=False, comments=True, limit=100, sub="all"):
         r = praw.Reddit(user_agent="Karma breakdown 1.0 by /u/_Daimon_",
                         http_proxy=hp.httpProxy(),
                         https_proxy=hp.httpProxy(),
-                        validate_certs="on")
+                        validate_certs="off")
         if not capture:
             r.config.api_request_delay = 0
         subreddit = r.get_subreddit(sub)

@@ -8,9 +8,6 @@ Buliding a Python  social media classifier using a GoLang Service Virtualiser.
 
 Indulge me, dear reader, with this thought expriment. Imagine a whole department of developers standing up at once, glancing at each other, and walking away for an "extended lunch-break" while the department next door desperately scrambles to get the culprit service back up.
 
-.. figure:: 1ftcd5.jpg
-   :alt: sometimes the world can be an unpredictable place
-
 You suddenly realise it's not only you who can no longer work: no one can. Little by little, chaos sets in: people start wondering around, talking about their weekends, playing table football, throwing things around. This is the corporate equivalent to a big money bonfire.
 
 Now here comes the thought expement: what could you have done, as an engineer, to prevent this all to common situation?

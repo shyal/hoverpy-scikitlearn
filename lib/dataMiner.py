@@ -28,3 +28,6 @@ def doMining():
         target += [i] * len(subTitles)
 
     return (titles, target)
+
+if __name__ == "__main__":
+    doMining()

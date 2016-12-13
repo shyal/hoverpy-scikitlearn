@@ -1,26 +1,35 @@
-Buliding a Python  social media classifier using a GoLang Service Virtualiser.
-==============================================================================
-
-(consider: bringing data mining to the 21st century. Can hoverfly be a tool that aids data mining?)
+Speeding up Machine Learning using a high-performance Go proxy.
+===============================================================
 
 .. toctree::
    :maxdepth: 2
 
+At times I want to grab a bunch of data, use it, and spit something out the other end. From time to time I get paid to do this, too. But the world of online dependencies is far less predictable than I'd like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investigating, and incorporating into my toolset.
 
-Virtualising Dependencies
--------------------------
+Well I recently came across an ultra-high-performance proxy, written in Go, called `HoverFly <http://www.hoverfly.io/>`_. So I decided to write a light-weight Python binding to it: `HoverPy <http://www.hoverpy.io/>`_. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I'll take you through using this very thin Python layer to build a classifier using SciKitLearn, with HackerNews and Reddit as its endpoints.
+
+What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, and as you'll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-right, blazingly fast, and failure proof.
+
+Data mining HackerNews and Reddit
+---------------------------------
 
 Let's get going:
 
 .. code-block:: bash
 
-    pip install hoverpy
+    pip install hoverpy haxor praw
     python
+
+./lib/hnMiner.py
+~~~~~~~~~~~~~~~~~
 
 Let's get the top 100 posts on HackerNews
 
-.. literalinclude:: code/hn_titles.py
+.. literalinclude:: ../../lib/hnMiner.py
    :language: python
+
+We can do the same with ``lib/redditMiner.py``.
+
 
 Let's run this, and get the top 100 titles on HN:
 
@@ -47,16 +56,17 @@ Time taken: **15.888608 seconds**. I don't know about you, but working with depe
 
     time taken: 0.196227 seconds.
 
-Time taken: **0.196227 seconds**. That's a lot better!
+Time taken: **0.196227 seconds**. That's an 80x speed-up: fast enough to collect a meaningful chunk of data transparently.
 
+Putting our miners together
+---------------------------
 
-Data mining and caching
------------------------
+Let's go ahead and write a ``doMining`` function that'll bring in all the data we need from the HN sections, and Reddit subs.
 
-In this example we are going to use Hoverfly to harvest our data, however please remember it also caches POSTS, PUTS etc. as well as all for mutating responses via middleware. In fact I could have used it with libraries like Praw or Haxor, but I decided to hit the endpoints directly for efficiency.
+.. literalinclude:: ../../lib/dataMiner.py
+   :language: python
 
-
-
+That's really all we need, and thanks to HoverFly the entire process, once cached, is blazingly fast. Let's move on to our next step.
 
 Building an HN or Reddit classifier
 -----------------------------------
@@ -70,36 +80,22 @@ Well now that we can transparently cache our dependencies, let's build something
 
 .. code-block:: bash
 
-    $ python social_media.py --comments --text
+    $ python social_media.py
 
 This spins up our classifier:
 
 .. literalinclude:: code/social_media_output.txt
 
-Everything under *TEST CLASSIFIER* is the result of running these strings through the classifier. Let's break this down, and see how it works. Feel free to type in text, and see how the classifier holds up.
+Everything under *TEST CLASSIFIER* is the result of running these strings through the classifier. Let's break this down, and see how it works. Feel free to type in text, and see how the classifier holds up. See whether you can formuate sentences that would fall within the specified subs.
 
+./social_media.py
+-----------------
 
 .. literalinclude:: ../../social_media.py
    :language: python
    :lines: 1-13
 
-Above we simply build an array of subs.
-
-Please note, if you are copy and pasting these examples, you'll need to set some args to true here:
-
-.. code-block:: python
-
-    args.comments = True
-    args.text = True
-
-Next, we built out getters, and then actually went to fetch the post titles, text, and comments from HN and Reddit.
-
-.. literalinclude:: ../../social_media.py
-   :language: python
-   :lines: 14-27
-
-
-Scikitlearn has a high level component that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:
+Scikitlearn has a high level component ``CountVectorizer`` that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:
 
 .. literalinclude:: ../../social_media.py
    :language: python
@@ -131,8 +127,8 @@ We can now run our example sentences, and go into our main prediction loop.
    :language: python
    :lines: 53-75
 
-Other use cases
----------------
+Testing
+-------
 
 Indulge me, dear reader, with this thought expriment. Imagine a whole department of developers standing up at once, glancing at each other, and walking away for an "extended lunch-break" while the department next door desperately scrambles to get the culprit service back up.
 

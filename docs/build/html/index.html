@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Buliding a Python social media classifier using a GoLang Service Virtualiser. &mdash; social_media 1.0 documentation</title>
+    <title>Speeding up Machine Learning using a high-performance Go proxy. &mdash; social_media 1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -39,49 +39,57 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="buliding-a-python-social-media-classifier-using-a-golang-service-virtualiser">
-<h1>Buliding a Python  social media classifier using a GoLang Service Virtualiser.<a class="headerlink" href="#buliding-a-python-social-media-classifier-using-a-golang-service-virtualiser" title="Permalink to this headline">¶</a></h1>
-<p>(consider: bringing data mining to the 21st century. Can hoverfly be a tool that aids data mining?)</p>
+  <div class="section" id="speeding-up-machine-learning-using-a-high-performance-go-proxy">
+<h1>Speeding up Machine Learning using a high-performance Go proxy.<a class="headerlink" href="#speeding-up-machine-learning-using-a-high-performance-go-proxy" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
-<div class="section" id="virtualising-dependencies">
-<h2>Virtualising Dependencies<a class="headerlink" href="#virtualising-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>At times I want to grab a bunch of data, use it, and spit something out the other end. From time to time I get paid to do this, too. But the world of online dependencies is far less predictable than I&#8217;d like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investigating, and incorporating into my toolset.</p>
+<p>Well I recently came across an ultra-high-performance proxy, written in Go, called <a class="reference external" href="http://www.hoverfly.io/">HoverFly</a>. So I decided to write a light-weight Python binding to it: <a class="reference external" href="http://www.hoverpy.io/">HoverPy</a>. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I&#8217;ll take you through using this very thin Python layer to build a classifier using SciKitLearn, with HackerNews and Reddit as its endpoints.</p>
+<p>What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, and as you&#8217;ll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-right, blazingly fast, and failure proof.</p>
+<div class="section" id="data-mining-hackernews-and-reddit">
+<h2>Data mining HackerNews and Reddit<a class="headerlink" href="#data-mining-hackernews-and-reddit" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s get going:</p>
-<div class="highlight-bash"><div class="highlight"><pre>pip install hoverpy
+<div class="highlight-bash"><div class="highlight"><pre>pip install hoverpy haxor praw
 python
 </pre></div>
 </div>
+<div class="section" id="lib-hnminer-py">
+<h3>./lib/hnMiner.py<a class="headerlink" href="#lib-hnminer-py" title="Permalink to this headline">¶</a></h3>
 <p>Let&#8217;s get the top 100 posts on HackerNews</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">hoverpy</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">hoverpy</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">hackernews</span> <span class="kn">import</span> <span class="n">HackerNews</span>
 
-<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-    <span class="s">&quot;--capture&quot;</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="s">&quot;capture the data from hackernews&quot;</span><span class="p">,</span>
-    <span class="n">action</span><span class="o">=</span><span class="s">&quot;store_true&quot;</span><span class="p">)</span>
 
-<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">getHNData</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="s">&quot;showstories&quot;</span><span class="p">):</span>
+    <span class="n">dbpath</span> <span class="o">=</span> <span class="s">&quot;data/hn.</span><span class="si">%s</span><span class="s">.db&quot;</span> <span class="o">%</span> <span class="n">sub</span>
+    <span class="n">capture</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dbpath</span><span class="p">)</span>
 
-<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="k">with</span> <span class="n">hoverpy</span><span class="o">.</span><span class="n">HoverPy</span><span class="p">(</span><span class="n">capture</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">capture</span><span class="p">):</span>
-    <span class="n">prot</span> <span class="o">=</span> <span class="s">&quot;https&quot;</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">capture</span> <span class="k">else</span> <span class="s">&quot;http&quot;</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="s">&quot;</span><span class="si">%s</span><span class="s">://hacker-news.firebaseio.com/v0/topstories.json&quot;</span> <span class="o">%</span> <span class="n">prot</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[:</span><span class="mi">100</span><span class="p">]:</span>
-        <span class="n">it</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s">&quot;</span><span class="si">%s</span><span class="s">://hacker-news.firebaseio.com/v0/item/</span><span class="si">%i</span><span class="s">.json&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prot</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s">&quot;title&quot;</span><span class="p">])</span>
+    <span class="k">with</span> <span class="n">hoverpy</span><span class="o">.</span><span class="n">HoverPy</span><span class="p">(</span><span class="n">capture</span><span class="o">=</span><span class="n">capture</span><span class="p">,</span> <span class="n">dbpath</span><span class="o">=</span><span class="n">dbpath</span><span class="p">,</span> <span class="n">httpsToHttp</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">hn</span> <span class="o">=</span> <span class="n">HackerNews</span><span class="p">()</span>
+        <span class="n">titles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;GETTING HACKERNEWS </span><span class="si">%s</span><span class="s"> DATA&quot;</span> <span class="o">%</span> <span class="n">sub</span><span class="p">)</span>
+        <span class="n">subs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;showstories&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="o">.</span><span class="n">show_stories</span><span class="p">,</span>
+                <span class="s">&quot;askstories&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="o">.</span><span class="n">ask_stories</span><span class="p">,</span>
+                <span class="s">&quot;jobstories&quot;</span><span class="p">:</span> <span class="n">hn</span><span class="o">.</span><span class="n">job_stories</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">story_id</span> <span class="ow">in</span> <span class="n">subs</span><span class="p">[</span><span class="n">sub</span><span class="p">](</span><span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">):</span>
+            <span class="n">story</span> <span class="o">=</span> <span class="n">hn</span><span class="o">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">story_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">story</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            <span class="n">titles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">story</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;got </span><span class="si">%i</span><span class="s"> hackernews titles&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">titles</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">titles</span>
 
-<span class="k">print</span><span class="p">(</span><span class="s">&quot;time taken: </span><span class="si">%f</span><span class="s"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">getHNData</span><span class="p">(</span><span class="s">&quot;topstories&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>We can do the same with <code class="docutils literal"><span class="pre">lib/redditMiner.py</span></code>.</p>
 <p>Let&#8217;s run this, and get the top 100 titles on HN:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>./hn_titles.py --capture
 
@@ -102,11 +110,48 @@ Interview with Max Levchin
 <span class="nb">time </span>taken: 0.196227 seconds.
 </pre></div>
 </div>
-<p>Time taken: <strong>0.196227 seconds</strong>. That&#8217;s a lot better!</p>
+<p>Time taken: <strong>0.196227 seconds</strong>. That&#8217;s an 80x speed-up: fast enough to collect a meaningful chunk of data transparently.</p>
 </div>
-<div class="section" id="data-mining-and-caching">
-<h2>Data mining and caching<a class="headerlink" href="#data-mining-and-caching" title="Permalink to this headline">¶</a></h2>
-<p>In this example we are going to use Hoverfly to harvest our data, however please remember it also caches POSTS, PUTS etc. as well as all for mutating responses via middleware. In fact I could have used it with libraries like Praw or Haxor, but I decided to hit the endpoints directly for efficiency.</p>
+</div>
+<div class="section" id="putting-our-miners-together">
+<h2>Putting our miners together<a class="headerlink" href="#putting-our-miners-together" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s go ahead and write a <code class="docutils literal"><span class="pre">doMining</span></code> function that&#8217;ll bring in all the data we need from the HN sections, and Reddit subs.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">subs</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;showstories&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;askstories&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;jobstories&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;republican&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;democrat&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;linux&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;python&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;music&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;movies&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;literature&#39;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;books&#39;</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">doMining</span><span class="p">():</span>
+
+    <span class="n">titles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="kn">from</span> <span class="nn">hnMiner</span> <span class="kn">import</span> <span class="n">getHNData</span>
+    <span class="kn">from</span> <span class="nn">redditMiner</span> <span class="kn">import</span> <span class="n">getRedditData</span>
+
+    <span class="n">getter</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;hn&#39;</span><span class="p">:</span> <span class="n">getHNData</span><span class="p">,</span> <span class="s">&#39;reddit&#39;</span><span class="p">:</span> <span class="n">getRedditData</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">)):</span>
+        <span class="n">subTitles</span> <span class="o">=</span> <span class="n">getter</span><span class="p">[</span><span class="n">subs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]](</span>
+            <span class="n">sub</span><span class="o">=</span><span class="n">subs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">titles</span> <span class="o">+=</span> <span class="n">subTitles</span>
+        <span class="n">target</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">subTitles</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">titles</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">doMining</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>That&#8217;s really all we need, and thanks to HoverFly the entire process, once cached, is blazingly fast. Let&#8217;s move on to our next step.</p>
 </div>
 <div class="section" id="building-an-hn-or-reddit-classifier">
 <h2>Building an HN or Reddit classifier<a class="headerlink" href="#building-an-hn-or-reddit-classifier" title="Permalink to this headline">¶</a></h2>
@@ -114,7 +159,7 @@ Interview with Max Levchin
 <img alt="hat" src="_images/hat.jpg" />
 </div>
 <p>Well now that we can transparently cache our dependencies, let&#8217;s build something interesting. We are going to build a classifier that predicts whether text may have come from HN or Reddit, and also specifically which sub.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>python social_media.py --comments --text
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>python social_media.py
 </pre></div>
 </div>
 <p>This spins up our classifier:</p>
@@ -152,51 +197,32 @@ TEST CLASSIFIER
 Enter title: 
 </pre></div>
 </div>
-<p>Everything under <em>TEST CLASSIFIER</em> is the result of running these strings through the classifier. Let&#8217;s break this down, and see how it works. Feel free to type in text, and see how the classifier holds up.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">lib.parseArgs</span> <span class="kn">import</span> <span class="n">args</span>
-
-<span class="n">subs</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;showstories&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;askstories&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;jobstories&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;republican&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;democrat&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;linux&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;music&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;movies&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;literature&#39;</span><span class="p">),</span>
-        <span class="p">(</span><span class="s">&#39;reddit&#39;</span><span class="p">,</span> <span class="s">&#39;books&#39;</span><span class="p">)]</span>
-</pre></div>
+<p>Everything under <em>TEST CLASSIFIER</em> is the result of running these strings through the classifier. Let&#8217;s break this down, and see how it works. Feel free to type in text, and see how the classifier holds up. See whether you can formuate sentences that would fall within the specified subs.</p>
 </div>
-<p>Above we simply build an array of subs.</p>
-<p>Please note, if you are copy and pasting these examples, you&#8217;ll need to set some args to true here:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">args</span><span class="o">.</span><span class="n">comments</span> <span class="o">=</span> <span class="bp">True</span>
-<span class="n">args</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="bp">True</span>
-</pre></div>
-</div>
-<p>Next, we built out getters, and then actually went to fetch the post titles, text, and comments from HN and Reddit.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">titles</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">target</span> <span class="o">=</span> <span class="p">[]</span>
+<div class="section" id="social-media-py">
+<h2>./social_media.py<a class="headerlink" href="#social-media-py" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">lib</span> <span class="kn">import</span> <span class="n">dataMiner</span>
 
-<span class="kn">from</span> <span class="nn">lib.hn_helpers</span> <span class="kn">import</span> <span class="n">getHNData</span>
-<span class="kn">from</span> <span class="nn">lib.reddit_helpers</span> <span class="kn">import</span> <span class="n">getRedditData</span>
+<span class="n">titles</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">dataMiner</span><span class="o">.</span><span class="n">doMining</span><span class="p">()</span>
 
-<span class="n">getter</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;hn&#39;</span><span class="p">:</span> <span class="n">getHNData</span><span class="p">,</span> <span class="s">&#39;reddit&#39;</span><span class="p">:</span> <span class="n">getRedditData</span><span class="p">}</span>
-
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">subs</span><span class="p">)):</span>
-    <span class="n">subTitles</span> <span class="o">=</span> <span class="n">getter</span><span class="p">[</span><span class="n">subs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]](</span>
-        <span class="n">sub</span><span class="o">=</span><span class="n">subs</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
-        <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
-    <span class="n">titles</span> <span class="o">+=</span> <span class="n">subTitles</span>
-    <span class="n">target</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">subTitles</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Scikitlearn has a high level component that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span>
 <span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfTransformer</span>
 <span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
 
 <span class="n">count_vect</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">()</span>
 <span class="n">X_train_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span>
+
+<span class="n">tfidf_transformer</span> <span class="o">=</span> <span class="n">TfidfTransformer</span><span class="p">()</span>
+<span class="n">X_train_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_counts</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Scikitlearn has a high level component <code class="docutils literal"><span class="pre">CountVectorizer</span></code> that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s">&quot;powershell and openssl compatability testing&quot;</span><span class="p">,</span>
+    <span class="s">&quot;compiling source code on ubuntu&quot;</span><span class="p">,</span>
+    <span class="s">&quot;wifi drivers keep crashing&quot;</span><span class="p">,</span>
+    <span class="s">&quot;cron jobs&quot;</span><span class="p">,</span>
+    <span class="s">&quot;training day was a great movie with a legendary director&quot;</span><span class="p">,</span>
 </pre></div>
 </div>
 <p>You can check the score for various tokens, i.e.</p>
@@ -205,40 +231,16 @@ Enter title:
 </div>
 <p>Output: 13350</p>
 <p>We need to build a tf–idf (term frequency times inverse document frequency) transformer. This is to prevent larger documents to score higher, by having occurances score higher due to document size instead of token term relevance, which is why the fix is to divide the term frequencies by the document size.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">X_train_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titles</span><span class="p">)</span>
-
-<span class="n">tfidf_transformer</span> <span class="o">=</span> <span class="n">TfidfTransformer</span><span class="p">()</span>
-<span class="n">X_train_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X_train_counts</span><span class="p">)</span>
-
-<span class="n">clf</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_tfidf</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>And finally our <code class="docutils literal"><span class="pre">predict</span></code> function, which takes an array of sentences.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">sentences</span><span class="p">):</span>
-    <span class="n">X_new_counts</span> <span class="o">=</span> <span class="n">count_vect</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">sentences</span><span class="p">)</span>
-    <span class="n">X_new_tfidf</span> <span class="o">=</span> <span class="n">tfidf_transformer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_new_counts</span><span class="p">)</span>
-
-    <span class="n">predicted</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_new_tfidf</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">category</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">predicted</span><span class="p">):</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%r</span><span class="s"> =&gt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">subs</span><span class="p">[</span><span class="n">category</span><span class="p">]))</span>
-</pre></div>
-</div>
-<p>We can now run our example sentences, and go into our main prediction loop.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">tests</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s">&quot;powershell and openssl compatability testing&quot;</span><span class="p">,</span>
-    <span class="s">&quot;compiling source code on ubuntu&quot;</span><span class="p">,</span>
-    <span class="s">&quot;wifi drivers keep crashing&quot;</span><span class="p">,</span>
-    <span class="s">&quot;cron jobs&quot;</span><span class="p">,</span>
-    <span class="s">&quot;training day was a great movie with a legendary director&quot;</span><span class="p">,</span>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="s">&quot;training day was a great movie with a legendary director&quot;</span><span class="p">,</span>
     <span class="s">&quot;michael bay should remake lord of the rings, set in the future&quot;</span><span class="p">,</span>
     <span class="s">&quot;hilary clinton may win voters&#39; hearts&quot;</span><span class="p">,</span>
     <span class="s">&quot;donald trump may donimate the presidency&quot;</span><span class="p">,</span>
     <span class="s">&quot;reading dead wood gives me far more pleasure than using kindles&quot;</span><span class="p">,</span>
     <span class="s">&quot;hiring a back end engineer&quot;</span><span class="p">,</span>
-    <span class="s">&quot;guitar is louder than the piano although electronic is best&quot;</span><span class="p">,</span>
-    <span class="s">&quot;drum solo and singer from the rolling stones&quot;</span><span class="p">,</span>
-    <span class="s">&quot;hiring a back end engineer&quot;</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>And finally our <code class="docutils literal"><span class="pre">predict</span></code> function, which takes an array of sentences.</p>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="s">&quot;hiring a back end engineer&quot;</span><span class="p">,</span>
     <span class="s">&quot;javascript loader&quot;</span><span class="p">,</span>
     <span class="s">&quot;dostoevsky&#39;s existentialism&quot;</span>
 <span class="p">]</span>
@@ -246,12 +248,12 @@ Enter title:
 <span class="n">predict</span><span class="p">(</span><span class="n">tests</span><span class="p">)</span>
 
 <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-    <span class="n">predict</span><span class="p">([</span><span class="nb">raw_input</span><span class="p">(</span><span class="s">&quot;Enter title: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()])</span>
 </pre></div>
 </div>
+<p>We can now run our example sentences, and go into our main prediction loop.</p>
 </div>
-<div class="section" id="other-use-cases">
-<h2>Other use cases<a class="headerlink" href="#other-use-cases" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>Indulge me, dear reader, with this thought expriment. Imagine a whole department of developers standing up at once, glancing at each other, and walking away for an &#8220;extended lunch-break&#8221; while the department next door desperately scrambles to get the culprit service back up.</p>
 <p>You suddenly realise it&#8217;s not only you who can no longer work: no one can. Little by little, chaos sets in: people start wondering around, talking about their weekends, playing table football, throwing things around. This is the corporate equivalent to a big money bonfire.</p>
 <p>Now here comes the thought expement: what could you have done, as an engineer, to prevent this all to common situation?</p>
@@ -273,11 +275,15 @@ Enter title:
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Buliding a Python  social media classifier using a GoLang Service Virtualiser.</a><ul>
-<li><a class="reference internal" href="#virtualising-dependencies">Virtualising Dependencies</a></li>
-<li><a class="reference internal" href="#data-mining-and-caching">Data mining and caching</a></li>
+<li><a class="reference internal" href="#">Speeding up Machine Learning using a high-performance Go proxy.</a><ul>
+<li><a class="reference internal" href="#data-mining-hackernews-and-reddit">Data mining HackerNews and Reddit</a><ul>
+<li><a class="reference internal" href="#lib-hnminer-py">./lib/hnMiner.py</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#putting-our-miners-together">Putting our miners together</a></li>
 <li><a class="reference internal" href="#building-an-hn-or-reddit-classifier">Building an HN or Reddit classifier</a></li>
-<li><a class="reference internal" href="#other-use-cases">Other use cases</a></li>
+<li><a class="reference internal" href="#social-media-py">./social_media.py</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
 <li><a class="reference internal" href="#you-are-affected-but-the-problem-wasn-t-you">You are affected, but the problem wasn&#8217;t you</a></li>
 </ul>
 </li>

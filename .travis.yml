@@ -2,7 +2,7 @@ language: python
 python:
   - "2.7"
 script:
-  - sudo apt-get install python-numpy python-scipy
+  - sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
   - pip install -i https://testpypi.python.org/pypi hoverpy
   - python test_social_media.py
 

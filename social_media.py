@@ -1,4 +1,4 @@
-from lib.parseArgs import args
+# from lib.parseArgs import args
 
 subs = [('hn', 'showstories'),
         ('hn', 'askstories'),
@@ -14,15 +14,14 @@ subs = [('hn', 'showstories'),
 titles = []
 target = []
 
-from lib.hn_helpers import getHNData
-from lib.reddit_helpers import getRedditData
+from lib.hnMiner import getHNData
+from lib.redditMiner import getRedditData
 
 getter = {'hn': getHNData, 'reddit': getRedditData}
 
 for i in range(len(subs)):
     subTitles = getter[subs[i][0]](
-        sub=subs[i][1],
-        args=args)
+        sub=subs[i][1])
     titles += subTitles
     target += [i] * len(subTitles)
 

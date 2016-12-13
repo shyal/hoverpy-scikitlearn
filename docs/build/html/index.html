@@ -46,16 +46,6 @@
 <ul class="simple">
 </ul>
 </div>
-<p>Indulge me, dear reader, with this thought expriment. Imagine a whole department of developers standing up at once, glancing at each other, and walking away for an &#8220;extended lunch-break&#8221; while the department next door desperately scrambles to get the culprit service back up.</p>
-<p>You suddenly realise it&#8217;s not only you who can no longer work: no one can. Little by little, chaos sets in: people start wondering around, talking about their weekends, playing table football, throwing things around. This is the corporate equivalent to a big money bonfire.</p>
-<p>Now here comes the thought expement: what could you have done, as an engineer, to prevent this all to common situation?</p>
-<div class="section" id="you-are-affected-but-the-problem-wasn-t-you">
-<h2>You are affected, but the problem wasn&#8217;t you<a class="headerlink" href="#you-are-affected-but-the-problem-wasn-t-you" title="Permalink to this headline">¶</a></h2>
-<p>One technique to avoid these &#8220;real world&#8221; unpredictabilities is mocking. And I&#8217;m not using quotes around &#8220;real world&#8221; to pretend that I know better than people who don&#8217;t. I&#8217;m using them as sometimes one has to stand in awe at the gradual decay of the internet, and how we put up with it.</p>
-<p>How many of your bookmarks no longer work? URLs fade into the darkness, and along with them your data. The issue with mocking however is that it tests your code against expected data. What happens when the network gets slow, is wrong, or fails entirely?</p>
-<p>To solve this issue I recently wrote a python binding to a wonderful Service Virtualisation application called HoverFly. HoverFly is an ultra-fast light-weight proxy written in GoLang. Using it was a true eye-opener for me, as I can now completely isolate myself from the big nasty and unpredictable world, while pretending its still there.</p>
-<p>On my search for dependencies for this blog post, I thought what better than using Hacker News and Reddit. Hacker News is hosted on firebase, which has no rate limit and is actually quite fast. Getting data from Reddit however is a completely different story all together. The rate limit is very low, making it the perfect dependency one cannot depend upon.</p>
-</div>
 <div class="section" id="virtualising-dependencies">
 <h2>Virtualising Dependencies<a class="headerlink" href="#virtualising-dependencies" title="Permalink to this headline">¶</a></h2>
 <p>Let&#8217;s get going:</p>
@@ -260,6 +250,19 @@ Enter title:
 </pre></div>
 </div>
 </div>
+<div class="section" id="other-use-cases">
+<h2>Other use cases<a class="headerlink" href="#other-use-cases" title="Permalink to this headline">¶</a></h2>
+<p>Indulge me, dear reader, with this thought expriment. Imagine a whole department of developers standing up at once, glancing at each other, and walking away for an &#8220;extended lunch-break&#8221; while the department next door desperately scrambles to get the culprit service back up.</p>
+<p>You suddenly realise it&#8217;s not only you who can no longer work: no one can. Little by little, chaos sets in: people start wondering around, talking about their weekends, playing table football, throwing things around. This is the corporate equivalent to a big money bonfire.</p>
+<p>Now here comes the thought expement: what could you have done, as an engineer, to prevent this all to common situation?</p>
+</div>
+<div class="section" id="you-are-affected-but-the-problem-wasn-t-you">
+<h2>You are affected, but the problem wasn&#8217;t you<a class="headerlink" href="#you-are-affected-but-the-problem-wasn-t-you" title="Permalink to this headline">¶</a></h2>
+<p>One technique to avoid these &#8220;real world&#8221; unpredictabilities is mocking. And I&#8217;m not using quotes around &#8220;real world&#8221; to pretend that I know better than people who don&#8217;t. I&#8217;m using them as sometimes one has to stand in awe at the gradual decay of the internet, and how we put up with it.</p>
+<p>How many of your bookmarks no longer work? URLs fade into the darkness, and along with them your data. The issue with mocking however is that it tests your code against expected data. What happens when the network gets slow, is wrong, or fails entirely?</p>
+<p>To solve this issue I recently wrote a python binding to a wonderful Service Virtualisation application called HoverFly. HoverFly is an ultra-fast light-weight proxy written in GoLang. Using it was a true eye-opener for me, as I can now completely isolate myself from the big nasty and unpredictable world, while pretending its still there.</p>
+<p>On my search for dependencies for this blog post, I thought what better than using Hacker News and Reddit. Hacker News is hosted on firebase, which has no rate limit and is actually quite fast. Getting data from Reddit however is a completely different story all together. The rate limit is very low, making it the perfect dependency one cannot depend upon.</p>
+</div>
 </div>
 
 
@@ -271,10 +274,11 @@ Enter title:
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Buliding a Python  social media classifier using a GoLang Service Virtualiser.</a><ul>
-<li><a class="reference internal" href="#you-are-affected-but-the-problem-wasn-t-you">You are affected, but the problem wasn&#8217;t you</a></li>
 <li><a class="reference internal" href="#virtualising-dependencies">Virtualising Dependencies</a></li>
 <li><a class="reference internal" href="#data-mining-and-caching">Data mining and caching</a></li>
 <li><a class="reference internal" href="#building-an-hn-or-reddit-classifier">Building an HN or Reddit classifier</a></li>
+<li><a class="reference internal" href="#other-use-cases">Other use cases</a></li>
+<li><a class="reference internal" href="#you-are-affected-but-the-problem-wasn-t-you">You are affected, but the problem wasn&#8217;t you</a></li>
 </ul>
 </li>
 </ul>

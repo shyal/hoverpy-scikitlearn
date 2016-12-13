@@ -6,22 +6,6 @@ Buliding a Python  social media classifier using a GoLang Service Virtualiser.
 .. toctree::
    :maxdepth: 2
 
-Indulge me, dear reader, with this thought expriment. Imagine a whole department of developers standing up at once, glancing at each other, and walking away for an "extended lunch-break" while the department next door desperately scrambles to get the culprit service back up.
-
-You suddenly realise it's not only you who can no longer work: no one can. Little by little, chaos sets in: people start wondering around, talking about their weekends, playing table football, throwing things around. This is the corporate equivalent to a big money bonfire.
-
-Now here comes the thought expement: what could you have done, as an engineer, to prevent this all to common situation?
-
-You are affected, but the problem wasn't you
---------------------------------------------
-
-One technique to avoid these "real world" unpredictabilities is mocking. And I'm not using quotes around "real world" to pretend that I know better than people who don't. I'm using them as sometimes one has to stand in awe at the gradual decay of the internet, and how we put up with it.
-
-How many of your bookmarks no longer work? URLs fade into the darkness, and along with them your data. The issue with mocking however is that it tests your code against expected data. What happens when the network gets slow, is wrong, or fails entirely?
-
-To solve this issue I recently wrote a python binding to a wonderful Service Virtualisation application called HoverFly. HoverFly is an ultra-fast light-weight proxy written in GoLang. Using it was a true eye-opener for me, as I can now completely isolate myself from the big nasty and unpredictable world, while pretending its still there.
-
-On my search for dependencies for this blog post, I thought what better than using Hacker News and Reddit. Hacker News is hosted on firebase, which has no rate limit and is actually quite fast. Getting data from Reddit however is a completely different story all together. The rate limit is very low, making it the perfect dependency one cannot depend upon.
 
 Virtualising Dependencies
 -------------------------
@@ -146,3 +130,23 @@ We can now run our example sentences, and go into our main prediction loop.
 .. literalinclude:: ../../social_media.py
    :language: python
    :lines: 53-75
+
+Other use cases
+---------------
+
+Indulge me, dear reader, with this thought expriment. Imagine a whole department of developers standing up at once, glancing at each other, and walking away for an "extended lunch-break" while the department next door desperately scrambles to get the culprit service back up.
+
+You suddenly realise it's not only you who can no longer work: no one can. Little by little, chaos sets in: people start wondering around, talking about their weekends, playing table football, throwing things around. This is the corporate equivalent to a big money bonfire.
+
+Now here comes the thought expement: what could you have done, as an engineer, to prevent this all to common situation?
+
+You are affected, but the problem wasn't you
+--------------------------------------------
+
+One technique to avoid these "real world" unpredictabilities is mocking. And I'm not using quotes around "real world" to pretend that I know better than people who don't. I'm using them as sometimes one has to stand in awe at the gradual decay of the internet, and how we put up with it.
+
+How many of your bookmarks no longer work? URLs fade into the darkness, and along with them your data. The issue with mocking however is that it tests your code against expected data. What happens when the network gets slow, is wrong, or fails entirely?
+
+To solve this issue I recently wrote a python binding to a wonderful Service Virtualisation application called HoverFly. HoverFly is an ultra-fast light-weight proxy written in GoLang. Using it was a true eye-opener for me, as I can now completely isolate myself from the big nasty and unpredictable world, while pretending its still there.
+
+On my search for dependencies for this blog post, I thought what better than using Hacker News and Reddit. Hacker News is hosted on firebase, which has no rate limit and is actually quite fast. Getting data from Reddit however is a completely different story all together. The rate limit is very low, making it the perfect dependency one cannot depend upon.

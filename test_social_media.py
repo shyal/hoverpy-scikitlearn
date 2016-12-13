@@ -53,6 +53,11 @@ class test_reddit(unittest.TestCase):
 class test_classifier(unittest.TestCase):
 
     def test_classifier(self):
+        try:
+            import scipy
+        except:
+            print("scipy module not installed - quitting")
+            return
         from lib import dataMiner
 
         titles, target = dataMiner.doMining()

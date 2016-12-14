@@ -45,11 +45,11 @@
 <ul class="simple">
 </ul>
 </div>
-<p>I recently came across an ultra-high-performance GoLang caching proxy, and wanted to see if I could use it to speed-up my scikit-learn based work. Up until now I&#8217;ve been using vcrpy to cache my requests during the mining phase, so I wanted to do a speed comparison.</p>
+<p>Up until now I&#8217;ve been using vcrpy to cache my requests during the data mining phase of my scikit-learn work, but I was recently intimated to an ultra-high-performance GoLang caching proxy, and wanted to see if I could use it for more speed-ups. I was so impressed that I wrote a python wrapper for it.</p>
 <div class="highlight-bash"><div class="highlight"><pre>pip install hoverpy --user
 </pre></div>
 </div>
-<p>Example:</p>
+<p>Offlining readthedocs:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">hoverpy</span>
 <span class="kn">import</span> <span class="nn">requests</span>
@@ -82,7 +82,7 @@ Time taken: 0.093463
 <img alt="_images/http_diff.png" src="_images/http_diff.png" />
 </div>
 <p>Not surprising really. My issue with caching proxies however, is that it&#8217;s the https handshaking that takes time–not fetching the data–and one of my many annoyances with vcrpy is that it won&#8217;t let me remap https requests to http.</p>
-<p>Therefore I was very pleased to see remapping work perfectly in hoverpy (code provided below the next graph). This lead to hoverpy wiping the floor with vcrpy; over 13x faster:</p>
+<p>Therefore I was very pleased to see remapping work perfectly in hoverpy (code provided below the next graph), with hoverpy wiping the floor with vcrpy; over 13x faster:</p>
 <div class="figure">
 <img alt="_images/https_get.png" src="_images/https_get.png" />
 </div>
@@ -105,7 +105,7 @@ Time taken: 0.093463
     <span class="k">print</span><span class="p">(</span><span class="s">&quot;got articles in </span><span class="si">%f</span><span class="s"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>I&#8217;m very impressed with hoverpy&#8217;s performance.</p>
+<p>I&#8217;m very impressed with hoverfly&#8217;s performance.</p>
 <div class="section" id="data-mining-hn">
 <h2>Data mining HN<a class="headerlink" href="#data-mining-hn" title="Permalink to this headline">¶</a></h2>
 <p>What I also really like about Hoverfly is how fast it loads, and how fast it loads up the boltdb database. I also like the fact it&#8217;s configuration-free. Here&#8217;s a function you can use for all your HN data mining needs:</p>
@@ -190,7 +190,7 @@ Time taken: 0.093463
 <div class="section" id="building-an-hn-or-reddit-classifier">
 <h2>Building an HN or Reddit classifier<a class="headerlink" href="#building-an-hn-or-reddit-classifier" title="Permalink to this headline">¶</a></h2>
 <p>OK time to play. I&#8217;m going to build a naive bayesian text classifier. You&#8217;ll be able to type in some text, and it&#8217;ll tell you which subreddit it thinks the text could have originated from.</p>
-<p>We still have a bit more mining work to do. Let&#8217;s bring in all the subs and sections we need, and build our data for classification:</p>
+<p>We still have a bit more mining work to do. Let&#8217;s bring in all the subs and sections we need, and build our structures for classification:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">subs</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;showstories&#39;</span><span class="p">),</span>
         <span class="p">(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;askstories&#39;</span><span class="p">),</span>
         <span class="p">(</span><span class="s">&#39;hn&#39;</span><span class="p">,</span> <span class="s">&#39;jobstories&#39;</span><span class="p">),</span>
@@ -256,9 +256,18 @@ Time taken: 0.093463
 </pre></div>
 </div>
 <p>In case you are not familiar with tokenizing, tfidf, classification etc. then I&#8217;ve provided a link at the end of this tutorial that&#8217;ll demistify the block above.</p>
+</div>
 <hr class="docutils" />
-<a class="reference external image-reference" href="https://travis-ci.org/shyal/hoverpy-scikitlearn"><img alt="https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master" src="https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master" /></a>
+<div class="section" id="wrapping-things-up">
+<h2>Wrapping things up<a class="headerlink" href="#wrapping-things-up" title="Permalink to this headline">¶</a></h2>
+<p>You can find hoverpy&#8217;s and hoverfly&#8217;s extensive documentation <a class="reference external" href="http://hoverpy.io">here</a> and <a class="reference external" href="http://hoverfly.io">here</a>. This excellent and lightweight proxy was developed by the very smart guys at <a class="reference external" href="http://specto.io">SpectoLabs</a> so I strongly suggest you show them some love (I could not, however, find a donations link).</p>
+<p>Repository for this post, with code: <a class="reference external" href="https://github.com/shyal/hoverpy-scikitlearn">https://github.com/shyal/hoverpy-scikitlearn</a></p>
 <p><a class="reference external" href="http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html">http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html</a></p>
+</div>
+<div class="section" id="taking-it-one-step-further">
+<h2>Taking it one step further<a class="headerlink" href="#taking-it-one-step-further" title="Permalink to this headline">¶</a></h2>
+<p>The premise of hoverfly is, in fact, testing, CD and CI. The intent is to commit your requests database, and test against them. This makes your code completely hermetic to external dependencies.</p>
+<a class="reference external image-reference" href="https://travis-ci.org/shyal/hoverpy-scikitlearn"><img alt="https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master" src="https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master" /></a>
 </div>
 </div>
 
@@ -277,6 +286,8 @@ Time taken: 0.093463
 <li><a class="reference internal" href="#data-mining-hn">Data mining HN</a></li>
 <li><a class="reference internal" href="#data-mining-reddit">Data mining Reddit</a></li>
 <li><a class="reference internal" href="#building-an-hn-or-reddit-classifier">Building an HN or Reddit classifier</a></li>
+<li><a class="reference internal" href="#wrapping-things-up">Wrapping things up</a></li>
+<li><a class="reference internal" href="#taking-it-one-step-further">Taking it one step further</a></li>
 </ul>
 </li>
 </ul>

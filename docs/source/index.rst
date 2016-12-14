@@ -1,37 +1,68 @@
-Speeding up Machine Learning using a high-performance Go proxy.
-===============================================================
+Speeding up scikit-learn workflow using a high-performance Go proxy.
+====================================================================
 
 .. toctree::
    :maxdepth: 2
 
-(First draft)
-
-At times I want to grab a bunch of data, use it, and spit something out the other end. But the world of online dependencies is far less predictable than I'd like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investing in, and incorporating into my toolset.
-
-.. figure:: hat.jpg
-   :alt: hat
-
-Well I recently came across an ultra-high-performance proxy, written in Go, called `HoverFly <http://www.hoverfly.io/>`_. So I decided to write a light-weight Python binding to it: `HoverPy <http://www.hoverpy.io/>`_. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I'll take you through using this very thin Python layer to build a classifier using scikit-learn, with HackerNews and Reddit as its endpoints.
-
-What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you'll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-tight, blazingly fast, and **utterly failure proof**.
-
-Let's begin by cloning the only repo we'll need for this post:
+I recently came across an ultra-high-performance GoLang caching proxy, and wanted to see if I could use it to speed-up my scikit-learn based work. Up until now I've been using vcrpy to cache my requests during the mining phase, so I wanted to do a speed comp.
 
 .. code-block:: bash
+  
+    pip install hoverpy --user
 
-    git clone https://github.com/shyal/hoverpy-scikitlearn.git
-    cd hoverpy-scikitlearn
-    virtualenv .venv
-    source .venv/bin/activate
-    pip install -r requirements_dev.txt
+Example:
+
+.. code-block:: python
+
+    import time
+    import hoverpy
+    import requests
+
+    start = time.time()
+
+    rtd = "http://readthedocs.org/api/v1/project/?limit=50&offset=0&format=json"
+
+    with hoverpy.HoverPy(recordMode='once'):
+        objects = requests.get(rtd).json()['objects']
+        links = ["http://readthedocs.org" + x['resource_uri'] for x in objects]
+        for link in links:
+            response = requests.get(link)
+            print("url: %s, status code: %s" % (link, response.status_code))
+        print("Time taken: %f" % (time.time() - start))
+
+Ouput:
+
+.. code-block:: bash
+    
+    [...]
+    Time taken: 9.418862
+
+However upon second invocation:
+
+.. code-block:: bash
+    
+    [...]
+    Time taken: 0.093463
+
+That's much better: *100.78x* faster than hitting the real endpoint.
+
+.. figure:: http_diff.png
+
+Not that surprising really. My issue with caching proxies these days, is that it's the https handshaking that takes time, not fetching the data. One of my annoyances with vcrpy is that it won't remap my https requests to http. However this worked perfectly in hoverpy.
+
+.. figure:: https_get.png
+
+Over 13x faster than vcrpy.
 
 Data mining HackerNews and Reddit
 ---------------------------------
 
+What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you'll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-tight, blazingly fast, and **utterly failure proof**.
+
+
 .. ./lib/hnMiner.py
    ~~~~~~~~~~~~~~~~
 
-Now that we have our environment setup, let's delve straight in by getting the top 100 posts on HackerNews. To do so, feel free to spin up your ``python`` shell and paste this in, or pass it to the python interpreter with ``python lib/hnMiner.py``
 
 .. literalinclude:: ../../lib/hnMiner.py
    :language: python
@@ -63,8 +94,6 @@ Output:
 
 
 This is roughly an **80x speedup**, *hitting our endpoint is starting to feel more like hitting a database* which is probably the key point to this chapter.
-
-Note regarding reddit: we can do the same with `lib/redditMiner.py <https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/lib/redditMiner.py>`_: ``python lib/redditMiner.py``. But I think you got the picture.
 
 ------------
 

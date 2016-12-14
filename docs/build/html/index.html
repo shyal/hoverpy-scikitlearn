@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Speeding up Machine Learning using a high-performance Go proxy. &mdash; social_media 1.0 documentation</title>
+    <title>Speeding up scikit-learn workflow using a high-performance Go proxy. &mdash; social_media 1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -39,30 +39,56 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="speeding-up-machine-learning-using-a-high-performance-go-proxy">
-<h1>Speeding up Machine Learning using a high-performance Go proxy.<a class="headerlink" href="#speeding-up-machine-learning-using-a-high-performance-go-proxy" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="speeding-up-scikit-learn-workflow-using-a-high-performance-go-proxy">
+<h1>Speeding up scikit-learn workflow using a high-performance Go proxy.<a class="headerlink" href="#speeding-up-scikit-learn-workflow-using-a-high-performance-go-proxy" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
-<p>(First draft)</p>
-<p>At times I want to grab a bunch of data, use it, and spit something out the other end. But the world of online dependencies is far less predictable than I&#8217;d like it to be, a quick browse of your own bookmarks should confirm this to you. Anything that can add predictability to my workflow is surely something worth investing in, and incorporating into my toolset.</p>
-<div class="figure">
-<img alt="hat" src="_images/hat.jpg" />
-</div>
-<p>Well I recently came across an ultra-high-performance proxy, written in Go, called <a class="reference external" href="http://www.hoverfly.io/">HoverFly</a>. So I decided to write a light-weight Python binding to it: <a class="reference external" href="http://www.hoverpy.io/">HoverPy</a>. HoverFly enables me to offline any data I want, while still being able to interact with it as if I were hitting the real endpoint. In this short article, I&#8217;ll take you through using this very thin Python layer to build a classifier using scikit-learn, with HackerNews and Reddit as its endpoints.</p>
-<p>What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you&#8217;ll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-tight, blazingly fast, and <strong>utterly failure proof</strong>.</p>
-<p>Let&#8217;s begin by cloning the only repo we&#8217;ll need for this post:</p>
-<div class="highlight-bash"><div class="highlight"><pre>git clone https://github.com/shyal/hoverpy-scikitlearn.git
-<span class="nb">cd </span>hoverpy-scikitlearn
-virtualenv .venv
-<span class="nb">source</span> .venv/bin/activate
-pip install -r requirements_dev.txt
+<p>I recently came across an ultra-high-performance GoLang caching proxy, and wanted to see if I could use it to speed-up my scikit-learn based work. Up until now I&#8217;ve been using vcrpy to cache my requests during the mining phase, so I wanted to do a speed comp.</p>
+<div class="highlight-bash"><div class="highlight"><pre>pip install hoverpy --user
 </pre></div>
 </div>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">hoverpy</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<span class="n">rtd</span> <span class="o">=</span> <span class="s">&quot;http://readthedocs.org/api/v1/project/?limit=50&amp;offset=0&amp;format=json&quot;</span>
+
+<span class="k">with</span> <span class="n">hoverpy</span><span class="o">.</span><span class="n">HoverPy</span><span class="p">(</span><span class="n">recordMode</span><span class="o">=</span><span class="s">&#39;once&#39;</span><span class="p">):</span>
+    <span class="n">objects</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rtd</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s">&#39;objects&#39;</span><span class="p">]</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;http://readthedocs.org&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="s">&#39;resource_uri&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;url: </span><span class="si">%s</span><span class="s">, status code: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Time taken: </span><span class="si">%f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Ouput:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>...<span class="o">]</span>
+Time taken: 9.418862
+</pre></div>
+</div>
+<p>However upon second invocation:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>...<span class="o">]</span>
+Time taken: 0.093463
+</pre></div>
+</div>
+<p>That&#8217;s much better: <em>100.78x</em> faster than hitting the real endpoint.</p>
+<div class="figure">
+<img alt="_images/http_diff.png" src="_images/http_diff.png" />
+</div>
+<p>Not that surprising really. My issue with caching proxies these days, is that it&#8217;s the https handshaking that takes time, not fetching the data. One of my annoyances with vcrpy is that it won&#8217;t remap my https requests to http. However this worked perfectly in hoverpy.</p>
+<div class="figure">
+<img alt="_images/https_get.png" src="_images/https_get.png" />
+</div>
+<p>Over 13x faster than vcrpy.</p>
 <div class="section" id="data-mining-hackernews-and-reddit">
 <h2>Data mining HackerNews and Reddit<a class="headerlink" href="#data-mining-hackernews-and-reddit" title="Permalink to this headline">¶</a></h2>
-<p>Now that we have our environment setup, let&#8217;s delve straight in by getting the top 100 posts on HackerNews. To do so, feel free to spin up your <code class="docutils literal"><span class="pre">python</span></code> shell and paste this in, or pass it to the python interpreter with <code class="docutils literal"><span class="pre">python</span> <span class="pre">lib/hnMiner.py</span></code></p>
+<p>What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you&#8217;ll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-tight, blazingly fast, and <strong>utterly failure proof</strong>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">hoverpy</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -122,7 +148,6 @@ pip install -r requirements_dev.txt
 </pre></div>
 </div>
 <p>This is roughly an <strong>80x speedup</strong>, <em>hitting our endpoint is starting to feel more like hitting a database</em> which is probably the key point to this chapter.</p>
-<p>Note regarding reddit: we can do the same with <a class="reference external" href="https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/lib/redditMiner.py">lib/redditMiner.py</a>: <code class="docutils literal"><span class="pre">python</span> <span class="pre">lib/redditMiner.py</span></code>. But I think you got the picture.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="putting-our-miners-together">
@@ -365,7 +390,7 @@ pip install -r requirements_dev.txt
             </a></p>
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Speeding up Machine Learning using a high-performance Go proxy.</a><ul>
+<li><a class="reference internal" href="#">Speeding up scikit-learn workflow using a high-performance Go proxy.</a><ul>
 <li><a class="reference internal" href="#data-mining-hackernews-and-reddit">Data mining HackerNews and Reddit</a></li>
 <li><a class="reference internal" href="#putting-our-miners-together">Putting our miners together</a></li>
 <li><a class="reference internal" href="#building-an-hn-or-reddit-classifier">Building an HN or Reddit classifier</a></li>

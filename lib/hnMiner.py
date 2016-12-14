@@ -33,7 +33,3 @@ def getHNData(verbose=False, limit=100, sub="showstories"):
             "got %i hackernews titles in %f seconds" %
             (len(titles), time.time() - start))
         return titles
-
-
-if __name__ == "__main__":
-    getHNData(verbose=False, limit=100, sub="topstories")

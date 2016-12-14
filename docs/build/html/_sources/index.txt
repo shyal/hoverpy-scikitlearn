@@ -4,7 +4,7 @@ Speeding up scikit-learn workflow using a high-performance Go proxy.
 .. toctree::
    :maxdepth: 2
 
-I recently came across an ultra-high-performance GoLang caching proxy, and wanted to see if I could use it to speed-up my scikit-learn based work. Up until now I've been using vcrpy to cache my requests during the mining phase, so I wanted to do a speed comp.
+I recently came across an ultra-high-performance GoLang caching proxy, and wanted to see if I could use it to speed-up my scikit-learn based work. Up until now I've been using vcrpy to cache my requests during the mining phase, so I wanted to do a speed comparison.
 
 .. code-block:: bash
   
@@ -37,7 +37,7 @@ Ouput:
     [...]
     Time taken: 9.418862
 
-However upon second invocation:
+Upon second invocation:
 
 .. code-block:: bash
     
@@ -48,138 +48,75 @@ That's much better: *100.78x* faster than hitting the real endpoint.
 
 .. figure:: http_diff.png
 
-Not that surprising really. My issue with caching proxies these days, is that it's the https handshaking that takes time, not fetching the data. One of my annoyances with vcrpy is that it won't remap my https requests to http. However this worked perfectly in hoverpy.
+Not surprising really. My issue with caching proxies however, is that it's the https handshaking that takes time–not fetching the data–and one of my many annoyances with vcrpy is that it won't let me remap https requests to http.
+
+Therefore I was very pleased to see remapping work perfectly in hoverpy (code provided below the next graph). This lead to hoverpy wiping the floor with vcrpy; over 13x faster:
 
 .. figure:: https_get.png
 
-Over 13x faster than vcrpy.
+.. literalinclude:: ../../examples/hn.py
+   :language: python
 
-Data mining HackerNews and Reddit
+I'm very impressed with hoverpy's performance.
+
+Data mining HN
 ---------------------------------
 
-What I really, really like about Hoverfly, is that it loads so fast in the background. Working with it feels completely transparent, requires zero configuration, and as you'll see I can include its data in my repos; pull that data in for my main functionality, and for my unit testing too. This makes my work 100% water-tight, blazingly fast, and **utterly failure proof**.
-
-
-.. ./lib/hnMiner.py
-   ~~~~~~~~~~~~~~~~
-
+What I also really like about Hoverfly is how fast it loads, and how fast it loads up the boltdb database. I also like the fact it's configuration-free. Here's a function you can use for all your HN data mining needs:
 
 .. literalinclude:: ../../lib/hnMiner.py
    :language: python
 
-Output:
-
-.. code-block:: bash
-
-    got 100 hackernews titles in 14.678717 seconds
-
-You may notice a bolt database was created inside the ``./data`` directory:
-
-.. code-block:: bash
-
-    ll data/hn.topstories.db
-    -rw-------  1 ioloop  staff  262144 Dec 13 15:27 data/hn.topstories.db
-
-Let's run the same command again:
-
-.. code-block:: bash
-
-    python lib/hnMiner.py
-
-Output:
-
-.. code-block:: bash
-
-    got 100 hackernews titles in 0.180554 seconds
-
-
-This is roughly an **80x speedup**, *hitting our endpoint is starting to feel more like hitting a database* which is probably the key point to this chapter.
 
 ------------
 
-Putting our miners together
----------------------------
+Data mining Reddit
+-------------------
 
-Let's go ahead and write a ``doMining`` function that'll bring in all the data we need from the HN sections, and Reddit subs. You'll need to run this file directly, as it's in the ``./lib`` folder, unless you want to sit around while all the data re-downloads (you don't).
+While we're at it, let's put a function here for offlining subreddits.
 
-.. literalinclude:: ../../lib/dataMiner.py
-   :language: python
+.. literalinclude:: ../../lib/redditMiner.py
+    :language: python
 
-command:
-
-.. code-block:: bash
-
-    python lib/dataMiner.py
-
-That's really all we need, and thanks to HoverFly the entire process, once cached, is blazingly fast. Let's move on to our next step.
 
 Building an HN or Reddit classifier
 -----------------------------------
 
+OK time to play. I'm going to build a naive bayesian text classifier. You'll be able to type in some text, and it'll tell you which subreddit it thinks the text could have originated from.
 
-Well now that we can transparently cache our dependencies, let's build something interesting. We are going to build a classifier that predicts whether text may have come from HN or Reddit, and also specifically which sub.
+We still have a bit more mining work to do. Let's bring in all the subs and sections we need, and build our data for classification:
 
-
-.. code-block:: bash
-
-    $ python social_media.py
-
-This spins up our classifier:
-
-.. raw:: html
-    
-    <script type="text/javascript" src="https://asciinema.org/a/626zkc3hduwfd7328aqme4wgl.js" id="asciicast-626zkc3hduwfd7328aqme4wgl" async></script>
-
-This is our whole classifier, and application entry point, ``./social_media.py``:
-
-
-.. literalinclude:: ../../social_media.py
+.. literalinclude:: ../../lib/dataMiner.py
    :language: python
+   :lines: 4-27
 
-Let's break it down a little.
-
-Scikit-learn has a high level component ``CountVectorizer`` that takes care of text preprocessing, tokenizing and filtering of stopwords for us. It transforms our text into feature vectors, in the form of a dictionary:
-
-.. literalinclude:: ../../social_media.py
-   :language: python
-   :lines: 9-10
-
-You can check the score for various tokens, i.e.
-
-.. code-block:: python
-
-    count_vect.vocabulary_.get(u"python")
-
-The word python appears a total of 21567 in this corpus.
-
-We need to build a tf–idf (term frequency times inverse document frequency) transformer.
-
-.. literalinclude:: ../../social_media.py
-   :language: python
-   :lines: 12-13
-
-This is to prevent larger documents to score higher, by having occurances score higher due to document size instead of token term relevance, which is why the fix is to divide the term frequencies by the document size.
-
-.. literalinclude:: ../../social_media.py
-   :language: python
-   :lines: 34-39
-
-And finally our ``predict`` function, which takes an array of sentences.
-
-.. literalinclude:: ../../social_media.py
-   :language: python
-   :lines: 18-25
+That's all our data mining done. I think this is a good time to remind ourselves a big part of machine learning is, in fact, data sanitisation and mining.
 
 -----------------------------------
 
-Taking it one step further with testing
----------------------------------------
 
-At this point I'm hoping you see how water tight this code is. But one is never above unit testing. What is great is that, at this point, since we have zero external data dependencies, the chances of the tests failing are virtually none.
+.. .. raw:: html
+    
+    <script type="text/javascript" src="https://asciinema.org/a/626zkc3hduwfd7328aqme4wgl.js" id="asciicast-626zkc3hduwfd7328aqme4wgl" async></script>
 
-.. literalinclude:: ../../test_social_media.py
+For this part, you'll need scikit-learn.
 
-In fact we can be so confident about our tests using HoverFly, that we can rest assured if our tests fail, or if we have issues then it will only have to do with our environment, or software dependencies; but not our data dependencies.
+.. code-block:: bash
+
+    pip install sklearn numpy scipy
+
+Running the classifier:
+
+.. literalinclude:: ../../social_media.py
+   :language: python
+   :lines: 3-33
+
+In case you are not familiar with tokenizing, tfidf, classification etc. then I've provided a link at the end of this tutorial that'll demistify the block above.
+
+-----------------------------------
+
 
 .. image:: https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master
     :target: https://travis-ci.org/shyal/hoverpy-scikitlearn
+
+http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html

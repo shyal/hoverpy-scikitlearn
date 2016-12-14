@@ -31,7 +31,3 @@ def getRedditData(verbose=False, comments=True, limit=100, sub="all"):
             titles.append(text)
         print("got %i %s" % (len(titles), sub))
         return titles
-
-if __name__ == "__main__":
-    for p in getRedditDataPraw(comments=True, sub="technology"):
-        print p

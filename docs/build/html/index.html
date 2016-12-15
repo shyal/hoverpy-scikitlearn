@@ -41,7 +41,7 @@
             
   <div class="section" id="speeding-up-scikit-learn-workflow-using-a-high-performance-go-proxy">
 <h1>Speeding up scikit-learn workflow using a high-performance Go proxy.<a class="headerlink" href="#speeding-up-scikit-learn-workflow-using-a-high-performance-go-proxy" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
+<script id="dsq-count-scr" src="//ioloop.disqus.com/count.js" async></script><div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
@@ -54,11 +54,10 @@
 <span class="kn">import</span> <span class="nn">hoverpy</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 
-<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-
 <span class="n">rtd</span> <span class="o">=</span> <span class="s">&quot;http://readthedocs.org/api/v1/project/?limit=50&amp;offset=0&amp;format=json&quot;</span>
 
 <span class="k">with</span> <span class="n">hoverpy</span><span class="o">.</span><span class="n">HoverPy</span><span class="p">(</span><span class="n">recordMode</span><span class="o">=</span><span class="s">&#39;once&#39;</span><span class="p">):</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">objects</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rtd</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s">&#39;objects&#39;</span><span class="p">]</span>
     <span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;http://readthedocs.org&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="s">&#39;resource_uri&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="p">:</span>
@@ -219,7 +218,9 @@ Time taken: 0.093463
 <p>That&#8217;s all our data mining done. I think this is a good time to remind ourselves a big part of machine learning is, in fact, data sanitisation and mining.</p>
 <hr class="docutils" />
 <p>For this part, you&#8217;ll need scikit-learn.</p>
-<div class="highlight-bash"><div class="highlight"><pre>pip install sklearn numpy scipy
+<div class="highlight-bash"><div class="highlight"><pre>pip install numpy
+
+pip install scikit-learn
 </pre></div>
 </div>
 <p>Running the classifier:</p>
@@ -268,7 +269,20 @@ Time taken: 0.093463
 <h2>Taking it one step further<a class="headerlink" href="#taking-it-one-step-further" title="Permalink to this headline">¶</a></h2>
 <p>The premise of hoverfly is, in fact, testing, CD and CI. The intent is to commit your requests database, and test against them. This makes your code completely hermetic to external dependencies.</p>
 <a class="reference external image-reference" href="https://travis-ci.org/shyal/hoverpy-scikitlearn"><img alt="https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master" src="https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master" /></a>
-</div>
+<div id="disqus_thread"></div>
+<script>
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = '//ioloop.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
 </div>
 
 

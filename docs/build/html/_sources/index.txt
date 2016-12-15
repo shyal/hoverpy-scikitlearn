@@ -1,6 +1,10 @@
 Speeding up scikit-learn workflow using a high-performance Go proxy.
 ====================================================================
 
+.. raw:: html
+  
+    <script id="dsq-count-scr" src="//ioloop.disqus.com/count.js" async></script>
+
 .. toctree::
    :maxdepth: 2
 
@@ -18,11 +22,10 @@ Offlining readthedocs:
     import hoverpy
     import requests
 
-    start = time.time()
-
     rtd = "http://readthedocs.org/api/v1/project/?limit=50&offset=0&format=json"
 
     with hoverpy.HoverPy(recordMode='once'):
+        start = time.time()
         objects = requests.get(rtd).json()['objects']
         links = ["http://readthedocs.org" + x['resource_uri'] for x in objects]
         for link in links:
@@ -103,7 +106,9 @@ For this part, you'll need scikit-learn.
 
 .. code-block:: bash
 
-    pip install sklearn numpy scipy
+    pip install numpy
+
+    pip install scikit-learn
 
 Running the classifier:
 
@@ -132,3 +137,21 @@ The premise of hoverfly is, in fact, testing, CD and CI. The intent is to commit
 
 .. image:: https://travis-ci.org/shyal/hoverpy-scikitlearn.svg?branch=master
     :target: https://travis-ci.org/shyal/hoverpy-scikitlearn
+
+.. raw:: html
+
+    <div id="disqus_thread"></div>
+    <script>
+    var disqus_config = function () {
+    this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+    this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    s.src = '//ioloop.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+

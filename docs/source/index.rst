@@ -67,6 +67,15 @@ Data mining HN
 
 Before we start, please note you can find the final script `here <https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/hoverpy_scikitlearn.py>`_. You'll also need the `data <https://github.com/shyal/hoverpy-scikitlearn/raw/master/data.tar>`_.
 
+.. code:: bash
+
+    wget https://github.com/shyal/hoverpy-scikitlearn/raw/master/data.tar
+    tar xvf data.tar
+    wget https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/hoverpy_scikitlearn.py
+    pip install requests, praw, haxor
+    python hoverpy_scikitlearn.py
+
+
 What I also really like about Hoverfly is how fast it loads, and how fast it loads up the boltdb database. I also like the fact it's configuration-free. Here's a function you can use to offline titles for various HN sections:
 
 .. literalinclude:: ../../hoverpy_scikitlearn.py

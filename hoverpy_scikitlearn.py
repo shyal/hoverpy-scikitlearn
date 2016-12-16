@@ -2,7 +2,6 @@ def getHNData(verbose=False, limit=100, sub="showstories"):
     from hackernews import HackerNews
     from hackernews import settings
     import hoverpy, time, os
-
     dbpath = "data/hn.%s.db" % sub
     with hoverpy.HoverPy(recordMode="once", dbpath=dbpath) as hp:
         if not hp.mode() == "capture":
@@ -25,6 +24,7 @@ def getHNData(verbose=False, limit=100, sub="showstories"):
             "got %i hackernews titles in %f seconds" %
             (len(titles), time.time() - start))
         return titles
+
 
 def getRedditData(verbose=False, comments=True, limit=100, sub="all"):
     import hoverpy, praw, time
@@ -89,32 +89,32 @@ sentences = ["powershell and openssl compatability testing",
 
 def main():
     titles, target = doMining()
-
     from sklearn.feature_extraction.text import CountVectorizer
     from sklearn.feature_extraction.text import TfidfTransformer
     from sklearn.naive_bayes import MultinomialNB
-
+    # build our count vectoriser
+    #
     count_vect = CountVectorizer()
     X_train_counts = count_vect.fit_transform(titles)
-
+    # build tfidf transformer
+    #
     tfidf_transformer = TfidfTransformer()
     X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
-
+    # classifier
+    #
     clf = MultinomialNB().fit(X_train_tfidf, target)
-
     print "*"*30+"\nTEST CLASSIFIER\n"+"*"*30
-
+    # predict function
+    #
     def predict(sentences):
         X_new_counts = count_vect.transform(sentences)
         X_new_tfidf = tfidf_transformer.transform(X_new_counts)
-
         predicted = clf.predict(X_new_tfidf)
-
         for doc, category in zip(sentences, predicted):
             print('%r => %s' % (doc, subs[category]))
-
+    #
     predict(sentences)
-
+    #
     while True:
         predict([raw_input("Enter title: ").strip()])
 

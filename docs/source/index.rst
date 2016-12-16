@@ -67,15 +67,6 @@ Data mining HN
 
 Before we start, please note you can find the final script `here <https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/hoverpy_scikitlearn.py>`_. You'll also need the `data <https://github.com/shyal/hoverpy-scikitlearn/raw/master/data.tar>`_.
 
-.. code:: bash
-
-    wget https://github.com/shyal/hoverpy-scikitlearn/raw/master/data.tar
-    tar xvf data.tar
-    wget https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/hoverpy_scikitlearn.py
-    pip install requests, praw, haxor
-    python hoverpy_scikitlearn.py
-
-
 What I also really like about Hoverfly is how fast it loads, and how fast it loads up the boltdb database. I also like the fact it's configuration-free. Here's a function you can use to offline titles for various HN sections:
 
 .. literalinclude:: ../../hoverpy_scikitlearn.py
@@ -152,11 +143,18 @@ For this part, you'll need scikit-learn.
 
     pip install scikit-learn
 
+Test scentences:
+
+.. literalinclude:: ../../hoverpy_scikitlearn.py
+   :language: python
+   :lines: 73-88
+
+
 Running the classifier:
 
 .. literalinclude:: ../../hoverpy_scikitlearn.py
    :language: python
-   :lines: 73-119
+   :lines: 90-119
 
 In case you are not familiar with tokenizing, tfidf, classification etc. then I've provided a link at the end of this tutorial that'll demistify the block above.
 

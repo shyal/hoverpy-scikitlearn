@@ -1,9 +1,11 @@
 import unittest
 
+from hoverpy_scikitlearn import *
+
 class test_hn(unittest.TestCase):
 
     def test_ask(self):
-        stories = hnMiner.getHNData(sub="jobstories")
+        stories = getHNData(sub="jobstories")
         for story in stories:
             if "hiring" in story:
                 self.assertTrue(True)
@@ -11,7 +13,7 @@ class test_hn(unittest.TestCase):
         self.assertTrue(False)
 
     def test_show(self):
-        stories = hnMiner.getHNData(sub="showstories")
+        stories = getHNData(sub="showstories")
         for story in stories:
             if "show" in story:
                 self.assertTrue(True)
@@ -19,20 +21,17 @@ class test_hn(unittest.TestCase):
         self.assertTrue(False)
 
     def test_ask(self):
-        stories = hnMiner.getHNData(sub="askstories")
+        stories = getHNData(sub="askstories")
         for story in stories:
             if "ask" in story:
                 self.assertTrue(True)
                 return
         self.assertTrue(False)
 
-from lib import redditMiner
-
-
 class test_reddit(unittest.TestCase):
 
     def generic_sub_tester(self, sub):
-        stories = redditMiner.getRedditData(sub=sub)
+        stories = getRedditData(sub=sub)
         for story in stories:
             if sub in story:
                 return True
@@ -55,9 +54,7 @@ class test_classifier(unittest.TestCase):
         except:
             print("scipy module not installed - quitting")
             return
-        from lib import dataMiner
-
-        titles, target = dataMiner.doMining()
+        titles, target = doMining()
 
         from sklearn.feature_extraction.text import CountVectorizer
         from sklearn.feature_extraction.text import TfidfTransformer
@@ -78,7 +75,7 @@ class test_classifier(unittest.TestCase):
             predicted = clf.predict(X_new_tfidf)
 
             for doc, category, answer in zip(sentences, predicted, answers):
-                self.assertEquals(dataMiner.subs[category], answer)
+                self.assertEquals(subs[category], answer)
 
         tests = [
             "powershell and openssl compatability testing",

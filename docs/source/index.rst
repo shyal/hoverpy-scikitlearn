@@ -63,9 +63,11 @@ Therefore I was very pleased to see remapping work perfectly in hoverpy (code pr
 Once again, on second run, hoverfly steps in with a very significant speedup. I'm very impressed with hoverfly's performance.
 
 Data mining HN
----------------------------------
+--------------
 
-What I also really like about Hoverfly is how fast it loads, and how fast it loads up the boltdb database. I also like the fact it's configuration-free. Here's a function you can use for all your HN data that'll offline titles for various HN sections:
+Before we start, please note you can find the final script `here <https://raw.githubusercontent.com/shyal/hoverpy-scikitlearn/master/hoverpy_scikitlearn.py>`_. You'll also need the `data <https://github.com/shyal/hoverpy-scikitlearn/raw/master/data.tar>`_.
+
+What I also really like about Hoverfly is how fast it loads, and how fast it loads up the boltdb database. I also like the fact it's configuration-free. Here's a function you can use to offline titles for various HN sections:
 
 .. literalinclude:: ../../hoverpy_scikitlearn.py
    :language: python
@@ -143,9 +145,9 @@ For this part, you'll need scikit-learn.
 
 Running the classifier:
 
-.. literalinclude:: ../../social_media.py
+.. literalinclude:: ../../hoverpy_scikitlearn.py
    :language: python
-   :lines: 3-33
+   :lines: 73-119
 
 In case you are not familiar with tokenizing, tfidf, classification etc. then I've provided a link at the end of this tutorial that'll demistify the block above.
 

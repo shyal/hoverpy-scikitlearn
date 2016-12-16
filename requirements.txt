@@ -1,4 +1,4 @@
-hoverpy==0.1.16
+hoverpy==0.1.20
 haxor==0.3.1
 praw==3.5.0
 scikit-learn==0.15.2

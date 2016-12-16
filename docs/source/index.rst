@@ -12,7 +12,7 @@ Up until now I've been using vcrpy to cache my requests during the data mining p
 
 .. code-block:: bash
   
-    pip install hoverpy --user
+    pip install hoverpy --user --upgrade
 
 Offlining readthedocs:
 
@@ -60,15 +60,16 @@ Therefore I was very pleased to see remapping work perfectly in hoverpy (code pr
 .. literalinclude:: ../../examples/hn.py
    :language: python
 
-I'm very impressed with hoverfly's performance.
+Once again, on second run, hoverfly steps in with a very significant speedup. I'm very impressed with hoverfly's performance.
 
 Data mining HN
 ---------------------------------
 
-What I also really like about Hoverfly is how fast it loads, and how fast it loads up the boltdb database. I also like the fact it's configuration-free. Here's a function you can use for all your HN data mining needs:
+What I also really like about Hoverfly is how fast it loads, and how fast it loads up the boltdb database. I also like the fact it's configuration-free. Here's a function you can use for all your HN data that'll offline titles for various HN sections:
 
-.. literalinclude:: ../../lib/hnMiner.py
+.. literalinclude:: ../../hoverpy_scikitlearn.py
    :language: python
+   :lines: 1-28
 
 
 ------------
@@ -76,31 +77,61 @@ What I also really like about Hoverfly is how fast it loads, and how fast it loa
 Data mining Reddit
 -------------------
 
-While we're at it, let's put a function here for offlining subreddits.
+While we're at it, let's put a function here for offlining subreddits. This one also includes comments:
 
-.. literalinclude:: ../../lib/redditMiner.py
+.. literalinclude:: ../../hoverpy_scikitlearn.py
     :language: python
+    :lines: 29-48
+
+
+Organising our datamines
+------------------------
+
+Rather than sitting around hitting these endpoints, you may as well download these datasets, to save yourself the time.
+
+.. code-block:: bash
+
+    wget https://github.com/shyal/hoverpy-scikitlearn/raw/master/data.tar
+    tar xvf data.tar
+
+And the code:
+
+.. literalinclude:: ../../hoverpy_scikitlearn.py
+   :language: python
+   :lines: 50-71
+
+Calling ``doMining()`` caches everything, which takes a while. Although you've hopefully downloaded and extracted ``data.tar``, in which case it shouldn't take more than a few seconds. That's all our data mining done. I think this is a good time to remind ourselves a big part of machine learning is, in fact, data sanitisation and mining.
+
+.. code::
+
+        GETTING HACKERNEWS showstories DATA
+        got 54 hackernews titles in 0.099983 seconds
+        GETTING HACKERNEWS askstories DATA
+        got 92 hackernews titles in 0.160661 seconds
+        GETTING HACKERNEWS jobstories DATA
+        got 12 hackernews titles in 0.024908 seconds
+        GETTING REDDIT r/republican DATA
+        GETTING REDDIT r/democrat DATA
+        GETTING REDDIT r/linux DATA
+        GETTING REDDIT r/python DATA
+        GETTING REDDIT r/music DATA
+        GETTING REDDIT r/movies DATA
+        GETTING REDDIT r/literature DATA
+        GETTING REDDIT r/books DATA
+
+        real    0m9.425s
+
+-----------------------------------
 
 
 Building an HN or Reddit classifier
 -----------------------------------
 
-OK time to play. I'm going to build a naive bayesian text classifier. You'll be able to type in some text, and it'll tell you which subreddit it thinks the text could have originated from.
-
-We still have a bit more mining work to do. Let's bring in all the subs and sections we need, and build our structures for classification:
-
-.. literalinclude:: ../../lib/dataMiner.py
-   :language: python
-   :lines: 4-27
-
-That's all our data mining done. I think this is a good time to remind ourselves a big part of machine learning is, in fact, data sanitisation and mining.
-
------------------------------------
-
-
 .. .. raw:: html
     
     <script type="text/javascript" src="https://asciinema.org/a/626zkc3hduwfd7328aqme4wgl.js" id="asciicast-626zkc3hduwfd7328aqme4wgl" async></script>
+
+OK time to play. Let's build a naive bayesian text classifier. You'll be able to type in some text, and it'll tell you which subreddit it thinks the text could have originated from.
 
 For this part, you'll need scikit-learn.
 

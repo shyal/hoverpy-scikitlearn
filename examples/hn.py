@@ -3,9 +3,10 @@ import hoverpy
 import requests
 import os
 
-prot = "http" if os.path.isfile("requests.db") else "https"
+prot = "http" if os.path.isfile("hn.db") else "https"
 
-with hoverpy.HoverPy(recordMode='once'):
+with hoverpy.HoverPy(recordMode='once', dbpath='hn.db') as hp:
+    print("started hoverpy in %s mode" % hp.mode())
     start = time.time()
     r = requests.get(
         "%s://hacker-news.firebaseio.com/v0/topstories.json" % (prot))

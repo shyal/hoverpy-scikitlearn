@@ -1,8 +1,5 @@
 import unittest
 
-from lib import hnMiner
-
-
 class test_hn(unittest.TestCase):
 
     def test_ask(self):
@@ -21,7 +18,7 @@ class test_hn(unittest.TestCase):
                 return
         self.assertTrue(False)
 
-    def test_show(self):
+    def test_ask(self):
         stories = hnMiner.getHNData(sub="askstories")
         for story in stories:
             if "ask" in story:

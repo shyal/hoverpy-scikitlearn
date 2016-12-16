@@ -3,5 +3,5 @@ python:
   - "2.7"
 script:
   - sudo apt-get install python-numpy python-scipy
-  - python test_social_media.py
+  - python test_hoverpy_scikitlearn.py
 
